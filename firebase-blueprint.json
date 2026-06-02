@@ -1,0 +1,97 @@
+{
+  "entities": {
+    "HomePost": {
+      "title": "Home Post",
+      "description": "A post displayed on the home screen grid.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Title of the post" },
+        "image": { "type": "string", "description": "URL of the post image" },
+        "link": { "type": "string", "description": "External link to open on click" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "password": { "type": "string", "description": "Optional password to unlock content" }
+      },
+      "required": ["title", "image", "link"]
+    },
+    "PremiumApp": {
+      "title": "Premium App",
+      "description": "A premium APK listed on the premium page.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Name of the app" },
+        "description": { "type": "string", "description": "Description of the app" },
+        "image": { "type": "string", "description": "URL of the app logo" },
+        "downloadLink": { "type": "string", "description": "Link to download the APK" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "password": { "type": "string", "description": "Optional password to unlock content" }
+      },
+      "required": ["name", "description", "image"]
+    },
+    "CyberNews": {
+      "title": "Cyber News",
+      "description": "A news article displayed in the Cyber News section.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Title of the news article" },
+        "content": { "type": "string", "description": "Content of the news article" },
+        "image": { "type": "string", "description": "URL of the news image" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "password": { "type": "string", "description": "Optional password to unlock content" }
+      },
+      "required": ["title", "content"]
+    },
+    "User": {
+      "title": "User",
+      "description": "User profile and subscription status.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "isPremium": { "type": "boolean", "description": "Whether the user has a premium subscription" },
+        "role": { "type": "string", "enum": ["admin", "user"], "description": "User role" }
+      },
+      "required": ["email", "isPremium", "role"]
+    },
+    "CustomAd": {
+      "title": "Custom Ad",
+      "description": "User created advertisements.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "mediaUrls": { "type": "array" },
+        "mediaType": { "type": "string", "enum": ["image", "video"] },
+        "transitionType": { "type": "string", "enum": ["fade", "slide", "zoom"] },
+        "displayTiming": { "type": "string", "enum": ["startup", "interval"] },
+        "intervalMinutes": { "type": "number" },
+        "durationDays": { "type": "number" },
+        "expiresAt": { "type": "number" },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "mediaUrls", "mediaType", "displayTiming", "isActive"]
+    }
+  },
+  "firestore": {
+    "/home_posts/{postId}": {
+      "schema": "HomePost",
+      "description": "Collection of posts for the home screen."
+    },
+    "/premium_apk/{appId}": {
+      "schema": "PremiumApp",
+      "description": "Collection of premium APKs."
+    },
+    "/cyber_news/{newsId}": {
+      "schema": "CyberNews",
+      "description": "Collection of cyber news articles."
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Collection of user profiles."
+    },
+    "/ads/{adId}": {
+      "schema": "CustomAd",
+      "description": "Collection of custom admin advertisements."
+    }
+  }
+}

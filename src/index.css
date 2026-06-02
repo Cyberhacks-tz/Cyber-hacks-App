@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --animate-shimmer: shimmer 2s infinite;
+
+  @keyframes shimmer {
+    100% {
+      transform: translateX(150%);
+    }
+  }
+
+  @keyframes float-up {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.3; }
+    90% { opacity: 0.3; }
+    100% { transform: translateY(-30vh) rotate(360deg); opacity: 0; }
+  }
+
+  @keyframes pulse-slow {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.1); }
+  }
+
+  @keyframes slide-bg {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-30px, -69.28px, 0); }
+  }
+
+  @keyframes scan-vertical {
+    0% { transform: translateY(-50%); }
+    100% { transform: translateY(0%); }
+  }
+}
+
+@custom-variant dark (&:is(.dark *));
+
+@layer base {
+  body {
+    @apply bg-zinc-50 text-zinc-900 dark:bg-black dark:text-white transition-colors duration-300;
+  }
+}
+

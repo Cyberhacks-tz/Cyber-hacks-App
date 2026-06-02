@@ -1,0 +1,140 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: home_posts
+    // Fields: title (string), image (string), link (string), createdAt (timestamp)
+    //
+    // Collection: premium_apk
+    // Fields: name (string), description (string), image (string), downloadLink (string), createdAt (timestamp)
+    //
+    // Collection: cyber_news
+    // Fields: title (string), content (string), image (string), createdAt (timestamp)
+    //
+    // Collection: users
+    // Fields: email (string), displayName (string), photoURL (string), isPremium (bool), role (string)
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isHardcodedAdmin() {
+      return isAuthenticated() && 
+             request.auth.token.email == "richarddeogtatius18@gmail.com" && 
+             request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isHardcodedAdmin() || 
+             (isAuthenticated() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidHomePost(data) {
+      return data.title is string && data.title.size() > 0 && data.title.size() < 500 &&
+             data.image is string && data.image.size() > 0 &&
+             data.link is string && data.link.size() > 0 &&
+             (!('password' in data) || data.password is string);
+    }
+
+    function isValidReactionUpdate() {
+      // Only allow updating reactions and userReactions fields
+      let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
+      return affectedKeys.hasOnly(['reactions', 'userReactions']);
+    }
+
+    function isValidPremiumApp(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() < 500 &&
+             data.description is string && data.description.size() > 0 &&
+             data.image is string && data.image.size() > 0 &&
+             data.downloadLink is string && data.downloadLink.size() > 0 &&
+             (!('password' in data) || data.password is string);
+    }
+
+    function isValidCyberNews(data) {
+      return data.title is string && data.title.size() > 0 && data.title.size() < 500 &&
+             data.content is string && data.content.size() > 0 && data.content.size() < 10000 &&
+             (!('image' in data) || data.image is string) &&
+             (!('password' in data) || data.password is string);
+    }
+
+    function isValidAiPrompt(data) {
+      return data.promptText is string && data.promptText.size() > 0 &&
+             (!('title' in data) || data.title is string) &&
+             (!('image' in data) || data.image is string) &&
+             (!('password' in data) || data.password is string);
+    }
+
+    function isValidUser(data) {
+      return data.email is string && 
+             data.displayName is string &&
+             data.photoURL is string &&
+             data.isPremium is bool &&
+             data.role in ['admin', 'user'];
+    }
+
+    function isValidAd(data) {
+      return data.title is string && data.title.size() > 0 &&
+             data.mediaUrls is list &&
+             data.mediaType in ['image', 'video'] &&
+             data.displayTiming in ['startup', 'interval'] &&
+             data.transitionType in ['fade', 'slide', 'zoom', 'flip', 'bounce'] &&
+             data.isActive is bool &&
+             (!('audioStartTime' in data) || data.audioStartTime is number) &&
+             (!('autoCloseSeconds' in data) || data.autoCloseSeconds is number) &&
+             (!('adLinkUrl' in data) || data.adLinkUrl is string);
+    }
+
+    // Rules
+    match /home_posts/{postId} {
+      allow read: if true;
+      allow create, delete: if isHardcodedAdmin() || (isAdmin() && isValidHomePost(request.resource.data));
+      allow update: if isHardcodedAdmin() || 
+                       (isAdmin() && isValidHomePost(request.resource.data)) ||
+                       (isAuthenticated() && isValidReactionUpdate());
+    }
+
+    match /premium_apk/{appId} {
+      allow read: if true;
+      allow create, update, delete: if isHardcodedAdmin() || (isAdmin() && isValidPremiumApp(request.resource.data));
+    }
+
+    match /cyber_news/{newsId} {
+      allow read: if true;
+      allow create, update, delete: if isHardcodedAdmin() || (isAdmin() && isValidCyberNews(request.resource.data));
+    }
+
+    match /ai_prompts/{promptId} {
+      allow read: if true;
+      allow create, update, delete: if isHardcodedAdmin() || (isAdmin() && isValidAiPrompt(request.resource.data));
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && isOwner(userId) && 
+                      (request.resource.data.role == 'user' || (request.resource.data.role == 'admin' && isHardcodedAdmin()));
+      allow update: if (isOwner(userId) && 
+                        request.resource.data.role == resource.data.role) || 
+                      isAdmin();
+    }
+
+    match /ads/{adId} {
+      allow read: if true;
+      allow create, update, delete: if isHardcodedAdmin() || (isAdmin() && isValidAd(request.resource.data));
+    }
+    
+    match /system_config/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
