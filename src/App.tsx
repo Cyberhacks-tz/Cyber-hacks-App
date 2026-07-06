@@ -325,7 +325,7 @@ const CodeBlock = ({ inline, className, children, ...props }: any) => {
             onClick={handleCopy} 
             className="text-zinc-400 hover:text-white transition-colors flex items-center gap-1.5 text-xs font-medium"
           >
-            {copied ? <><Check size={14} className="text-green-500" /> Copied</> : <><Copy size={14} /> Copy</>}
+            {copied ? <><Check size={14} className="text-green-400" /> Copied</> : <><Copy size={14} /> Copy</>}
           </button>
         </div>
         <SyntaxHighlighter
@@ -379,7 +379,7 @@ const PasswordModal = ({ isOpen, onClose, onSuccess, expectedPassword, requestMe
   const [error, setError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [colorIndex, setColorIndex] = useState(0);
-  const colors = ['text-red-500', 'text-green-500', 'text-blue-500', 'text-yellow-500', 'text-purple-500'];
+  const colors = ['text-red-500', 'text-green-400', 'text-blue-500', 'text-yellow-500', 'text-purple-500'];
 
   useEffect(() => {
     if (!isOpen) {
@@ -423,7 +423,7 @@ const PasswordModal = ({ isOpen, onClose, onSuccess, expectedPassword, requestMe
         exit={{ opacity: 0, scale: 0.9 }}
         className="relative w-full max-w-xs bg-zinc-900 border border-zinc-800 rounded-3xl p-6 text-center shadow-2xl"
       >
-        <div className="w-16 h-16 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-purple-600/20 text-green-400 rounded-full flex items-center justify-center mx-auto mb-4">
           <Key size={32} />
         </div>
         <h3 className="text-lg font-bold mb-4">{t('passwordPrompt')}</h3>
@@ -434,7 +434,7 @@ const PasswordModal = ({ isOpen, onClose, onSuccess, expectedPassword, requestMe
               value={input}
               onChange={(e) => { setInput(e.target.value); setError(false); }}
               placeholder={t('enterPassword')}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 pr-12 focus:outline-none focus:border-green-500 text-center"
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 pr-12 focus:outline-none focus:border-purple-500 text-center"
             />
             <button 
               type="button"
@@ -447,7 +447,7 @@ const PasswordModal = ({ isOpen, onClose, onSuccess, expectedPassword, requestMe
           {error && <p className="text-red-500 text-xs">{t('incorrectPassword')}</p>}
           <button 
             type="submit"
-            className="w-full py-3 bg-green-500 text-black font-bold rounded-xl hover:bg-green-600 transition-colors"
+            className="w-full py-3 bg-gradient-to-r from-green-600 to-purple-600 text-zinc-100 font-bold rounded-xl hover:bg-green-600 transition-colors"
           >
             {t('submit')}
           </button>
@@ -476,7 +476,7 @@ const Navbar = ({ activeTab, setActiveTab, t, theme }: { activeTab: string, setA
   return (
     <nav className={cn(
       "fixed bottom-0 left-0 right-0 backdrop-blur-xl border-t px-6 py-3 z-50 transition-colors",
-      theme === 'dark' ? "bg-zinc-950/80 border-white/5" : "bg-white/80 border-zinc-200"
+      theme === 'dark' ? "bg-black/80 border-white/5" : "bg-white/80 border-zinc-200"
     )}>
       <div className="max-w-md mx-auto flex justify-between items-center">
         {tabs.map((tab) => (
@@ -610,15 +610,15 @@ const Card: React.FC<CardProps> = ({ title, image, link, onClick, isAdmin, onDel
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full"
+            className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full"
           />
-          <span className="text-[10px] font-bold text-green-500 uppercase tracking-widest animate-pulse">Connecting...</span>
+          <span className="text-[10px] font-bold text-green-400 uppercase tracking-widest animate-pulse">Connecting...</span>
         </div>
       )}
       {isAdmin && (
       <div className="absolute top-2 right-2 z-10 flex gap-2">
         {password && (
-          <div className="px-2 py-1 bg-black/80 text-green-500 rounded text-[10px] font-mono flex items-center gap-1">
+          <div className="px-2 py-1 bg-black/80 text-green-400 rounded text-[10px] font-mono flex items-center gap-1">
             <Key size={10} /> {password}
           </div>
         )}
@@ -627,7 +627,7 @@ const Card: React.FC<CardProps> = ({ title, image, link, onClick, isAdmin, onDel
             e.stopPropagation();
             onEdit?.();
           }}
-          className="p-2 bg-green-500/80 text-white rounded-full hover:bg-green-600 transition-colors"
+          className="p-2 bg-gradient-to-r from-green-600 to-purple-600/80 text-white rounded-full hover:bg-green-600 transition-colors"
         >
           <Pencil size={14} />
         </button>
@@ -658,10 +658,10 @@ const Card: React.FC<CardProps> = ({ title, image, link, onClick, isAdmin, onDel
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
     </div>
     <div className="p-3 flex justify-between items-center">
-      <h3 className="text-sm font-semibold dark:text-zinc-100 text-zinc-900 truncate pr-2">
+      <h3 className="text-sm font-semibold dark:text-zinc-100 text-zinc-100 truncate pr-2">
         {title} {password && password.trim() !== '' && <span className="ml-1" title="Premium">👑</span>}
       </h3>
-      <ExternalLink size={14} className="text-green-600 dark:text-green-500 shrink-0" />
+      <ExternalLink size={14} className="text-green-600 dark:text-green-400 shrink-0" />
     </div>
     <div className="px-3 pb-3 flex gap-2" onClick={(e) => e.stopPropagation()}>
       {(['laugh', 'think', 'angry'] as const).map(type => {
@@ -674,7 +674,7 @@ const Card: React.FC<CardProps> = ({ title, image, link, onClick, isAdmin, onDel
             onClick={() => onReact?.(type)}
             className={cn(
               "flex items-center gap-1 text-xs px-2 py-1 rounded-full transition-colors",
-              isActive ? "bg-zinc-200 dark:bg-zinc-700 text-black dark:text-white" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+              isActive ? "bg-zinc-200 dark:bg-zinc-700 text-zinc-100 dark:text-white" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
             )}
           >
             <span>{emojis[type]}</span>
@@ -746,7 +746,7 @@ const PremiumCard: React.FC<PremiumCardProps> = ({ app, onDownload, isAdmin, onD
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ duration: 1, repeat: Infinity }}
           >
-            <Download size={24} className="text-green-500" />
+            <Download size={24} className="text-green-400" />
           </motion.div>
         </motion.div>
       )}
@@ -770,14 +770,14 @@ const PremiumCard: React.FC<PremiumCardProps> = ({ app, onDownload, isAdmin, onD
           {((app.description || '').length > 50 || (app.description || '').includes('\n')) && (
             <button 
               onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }} 
-              className="text-xs text-green-500 font-medium mt-1 hover:underline"
+              className="text-xs text-green-400 font-medium mt-1 hover:underline"
             >
               {isExpanded ? t('seeLess') : t('seeMore')}
             </button>
           )}
         </div>
         {isAdmin && app.password && (
-          <div className="mt-1 px-2 py-0.5 bg-black/80 text-green-500 rounded text-[10px] font-mono inline-flex items-center gap-1">
+          <div className="mt-1 px-2 py-0.5 bg-black/80 text-green-400 rounded text-[10px] font-mono inline-flex items-center gap-1">
             <Key size={10} /> {app.password}
           </div>
         )}
@@ -785,7 +785,7 @@ const PremiumCard: React.FC<PremiumCardProps> = ({ app, onDownload, isAdmin, onD
       <div className="flex flex-col gap-2">
         <button 
           onClick={handleDownload}
-          className="p-3 rounded-xl transition-all bg-green-500 text-black hover:bg-green-400"
+          className="p-3 rounded-xl transition-all bg-gradient-to-r from-green-600 to-purple-600 text-zinc-100 hover:from-green-500 hover:to-purple-500"
         >
           <Download size={20} />
         </button>
@@ -904,7 +904,7 @@ const AiPromptCard: React.FC<AiPromptCardProps> = ({ prompt, isAdmin, onDelete, 
         </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 p-3 sm:p-5 flex gap-2 justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      <div className="absolute inset-x-0 bottom-0 p-3 sm:p-5 flex gap-2 justify-center pointer-events-none opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <button 
           onClick={(e) => {
             e.stopPropagation();
@@ -1013,7 +1013,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ news, isAdmin, onDelete, onEdit, on
       {isAdmin && (
         <div className="absolute top-3 right-3 z-10 flex gap-2">
           {news.password && (
-            <div className="px-2 py-1 bg-black/80 text-green-500 rounded text-[10px] font-mono flex items-center gap-1">
+            <div className="px-2 py-1 bg-black/80 text-green-400 rounded text-[10px] font-mono flex items-center gap-1">
               <Key size={10} /> {news.password}
             </div>
           )}
@@ -1022,7 +1022,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ news, isAdmin, onDelete, onEdit, on
               e.stopPropagation();
               onEdit?.();
             }}
-            className="p-2 bg-green-500/80 text-white rounded-full hover:bg-green-600 transition-colors"
+            className="p-2 bg-gradient-to-r from-green-600 to-purple-600/80 text-white rounded-full hover:bg-green-600 transition-colors"
           >
             <Pencil size={14} />
           </button>
@@ -1043,7 +1043,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ news, isAdmin, onDelete, onEdit, on
           {news.title} {news.password && news.password.trim() !== '' && <span className="ml-1" title="Premium">👑</span>}
         </h3>
         <p className="text-sm text-zinc-300 line-clamp-2">{news.content}</p>
-        <span className="text-green-500 text-xs font-bold mt-2 block">{t('seeMore')}</span>
+        <span className="text-green-400 text-xs font-bold mt-2 block">{t('seeMore')}</span>
       </div>
     </motion.div>
     <PasswordModal 
@@ -1256,7 +1256,7 @@ const AiPromptDetailModal = ({ prompt, onClose }: { prompt: AiPrompt | null, onC
           <div className="p-6 relative z-10 border-t border-white/10 bg-black/40 backdrop-blur-md shrink-0 flex justify-end">
             <button 
                onClick={handleCopy}
-               className="flex items-center gap-2 bg-white text-black px-6 py-3 rounded-2xl font-bold hover:scale-[1.02] active:scale-[0.98] transition-all"
+               className="flex items-center gap-2 bg-white text-zinc-100 px-6 py-3 rounded-2xl font-bold hover:scale-[1.02] active:scale-[0.98] transition-all"
             >
                {copied ? <Check size={18} /> : <Copy size={18} />}
                {copied ? 'Copied!' : 'Copy Prompt'}
@@ -1322,7 +1322,7 @@ const AiPromptDetailModal = ({ prompt, onClose }: { prompt: AiPrompt | null, onC
         </button>
         <button 
           onClick={handleCopy}
-          className="flex-1 max-w-[180px] sm:max-w-[220px] shadow-2xl flex items-center justify-center gap-2 bg-white text-black px-4 sm:px-6 py-4 sm:py-5 rounded-2xl font-bold hover:bg-gray-200 transition-all active:scale-95 border border-white/20"
+          className="flex-1 max-w-[180px] sm:max-w-[220px] shadow-2xl flex items-center justify-center gap-2 bg-white text-zinc-100 px-4 sm:px-6 py-4 sm:py-5 rounded-2xl font-bold hover:bg-gray-200 transition-all active:scale-95 border border-white/20"
         >
           {copied ? <Check size={20} className="text-green-600" /> : <Copy size={20} />}
           {copied ? 'Copied' : <><span className="hidden sm:inline">Copy Prompt</span><span className="sm:hidden">Copy</span></>}
@@ -1412,7 +1412,7 @@ const AddModal = ({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         className="relative w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-3xl p-6 shadow-2xl max-h-[90vh] overflow-y-auto"
       >
-        <h2 className="text-xl font-bold mb-6 text-green-500">
+        <h2 className="text-xl font-bold mb-6 text-green-400">
           {initialData ? t('edit') : (type === 'post' ? t('addNewHack') : type === 'news' ? t('addNews') : t('addPremiumApp'))}
         </h2>
         
@@ -1424,7 +1424,7 @@ const AddModal = ({
                 <input 
                   autoFocus
                   value={formData.title || ''}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-purple-500 transition-colors"
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 />
               </div>
@@ -1433,7 +1433,7 @@ const AddModal = ({
                 <div className="flex gap-2">
                   <input 
                     value={formData.image || ''}
-                    className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-green-500 transition-colors"
+                    className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-purple-500 transition-colors"
                     onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                     placeholder="https://..."
                   />
@@ -1461,7 +1461,7 @@ const AddModal = ({
                 <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-2">{t('link')}</label>
                 <input 
                   value={formData.link || ''}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-purple-500 transition-colors"
                   onChange={(e) => setFormData({ ...formData, link: e.target.value })}
                 />
               </div>
@@ -1471,7 +1471,7 @@ const AddModal = ({
                   <input 
                     type={showPassword ? "text" : "password"}
                     value={formData.password || ''}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 pr-12 focus:outline-none focus:border-green-500 transition-colors"
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 pr-12 focus:outline-none focus:border-purple-500 transition-colors"
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   />
                   <button 
@@ -1487,7 +1487,7 @@ const AddModal = ({
                 <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-2">WhatsApp Request Text (Optional)</label>
                 <input 
                   value={formData.passwordRequestMsg || ''}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-purple-500 transition-colors"
                   onChange={(e) => setFormData({ ...formData, passwordRequestMsg: e.target.value })}
                   placeholder="『App』password from app"
                 />
@@ -1500,7 +1500,7 @@ const AddModal = ({
                 <input 
                   autoFocus
                   value={formData.title || ''}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-purple-500 transition-colors"
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 />
               </div>
@@ -1508,7 +1508,7 @@ const AddModal = ({
                 <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-2">{t('content')}</label>
                 <textarea 
                   value={formData.content || ''}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-green-500 transition-colors h-32 resize-none"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-purple-500 transition-colors h-32 resize-none"
                   onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                 />
               </div>
@@ -1517,7 +1517,7 @@ const AddModal = ({
                 <div className="flex gap-2">
                   <input 
                     value={formData.image || ''}
-                    className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-green-500 transition-colors"
+                    className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-purple-500 transition-colors"
                     onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                     placeholder="https://..."
                   />
@@ -1547,7 +1547,7 @@ const AddModal = ({
                   <input 
                     type={showPassword ? "text" : "password"}
                     value={formData.password || ''}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 pr-12 focus:outline-none focus:border-green-500 transition-colors"
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 pr-12 focus:outline-none focus:border-purple-500 transition-colors"
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   />
                   <button 
@@ -1563,7 +1563,7 @@ const AddModal = ({
                 <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-2">WhatsApp Request Text (Optional)</label>
                 <input 
                   value={formData.passwordRequestMsg || ''}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-purple-500 transition-colors"
                   onChange={(e) => setFormData({ ...formData, passwordRequestMsg: e.target.value })}
                   placeholder="『App』password from app"
                 />
@@ -1576,7 +1576,7 @@ const AddModal = ({
                 <input 
                   autoFocus
                   value={formData.title || ''}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-purple-500 transition-colors"
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="e.g. Code Review Prompt"
                 />
@@ -1585,7 +1585,7 @@ const AddModal = ({
                 <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-2">Prompt Text</label>
                 <textarea 
                   value={formData.promptText || ''}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-green-500 transition-colors h-32 resize-none"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-purple-500 transition-colors h-32 resize-none"
                   onChange={(e) => setFormData({ ...formData, promptText: e.target.value })}
                   placeholder="Act as a senior developer..."
                 />
@@ -1595,7 +1595,7 @@ const AddModal = ({
                 <div className="flex gap-2">
                   <input 
                     value={formData.image || ''}
-                    className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-green-500 transition-colors"
+                    className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-purple-500 transition-colors"
                     onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                     placeholder="https://..."
                   />
@@ -1625,7 +1625,7 @@ const AddModal = ({
                   <input 
                     type={showPassword ? "text" : "password"}
                     value={formData.password || ''}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 pr-12 focus:outline-none focus:border-green-500 transition-colors"
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 pr-12 focus:outline-none focus:border-purple-500 transition-colors"
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   />
                   <button 
@@ -1641,7 +1641,7 @@ const AddModal = ({
                 <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-2">WhatsApp Request Text (Optional)</label>
                 <input 
                   value={formData.passwordRequestMsg || ''}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-purple-500 transition-colors"
                   onChange={(e) => setFormData({ ...formData, passwordRequestMsg: e.target.value })}
                   placeholder="『App』password from app"
                 />
@@ -1654,7 +1654,7 @@ const AddModal = ({
                 <input 
                   autoFocus
                   value={formData.name || ''}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-purple-500 transition-colors"
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
               </div>
@@ -1662,7 +1662,7 @@ const AddModal = ({
                 <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-2">{t('description')}</label>
                 <textarea 
                   value={formData.description || ''}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-green-500 transition-colors h-24 resize-none"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-purple-500 transition-colors h-24 resize-none"
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 />
               </div>
@@ -1671,7 +1671,7 @@ const AddModal = ({
                 <div className="flex gap-2">
                   <input 
                     value={formData.image || ''}
-                    className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-green-500 transition-colors"
+                    className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-purple-500 transition-colors"
                     onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                     placeholder="https://..."
                   />
@@ -1699,7 +1699,7 @@ const AddModal = ({
                 <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-2">{t('downloadLink')}</label>
                 <input 
                   value={formData.downloadLink || ''}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-purple-500 transition-colors"
                   onChange={(e) => setFormData({ ...formData, downloadLink: e.target.value })}
                 />
               </div>
@@ -1709,7 +1709,7 @@ const AddModal = ({
                   <input 
                     type={showPassword ? "text" : "password"}
                     value={formData.password || ''}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 pr-12 focus:outline-none focus:border-green-500 transition-colors"
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 pr-12 focus:outline-none focus:border-purple-500 transition-colors"
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   />
                   <button 
@@ -1725,7 +1725,7 @@ const AddModal = ({
                 <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-2">WhatsApp Request Text (Optional)</label>
                 <input 
                   value={formData.passwordRequestMsg || ''}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl py-3 px-4 focus:outline-none focus:border-purple-500 transition-colors"
                   onChange={(e) => setFormData({ ...formData, passwordRequestMsg: e.target.value })}
                   placeholder="『App』password from app"
                 />
@@ -1765,7 +1765,7 @@ const AddModal = ({
               }
             }}
             disabled={isSubmitting}
-            className="flex-1 py-4 bg-green-500 text-black font-bold rounded-2xl hover:bg-green-400 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex-1 py-4 bg-gradient-to-r from-green-600 to-purple-600 text-zinc-100 font-bold rounded-2xl hover:from-green-500 hover:to-purple-500 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
               <>
@@ -1810,7 +1810,7 @@ const AdminAudioPreview = ({ soundUrl, audioStartTime }: { soundUrl: string, aud
         }}
       />
       <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 z-20 flex items-center gap-2">
-         <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+         <span className="w-2 h-2 rounded-full bg-gradient-to-r from-green-600 to-purple-600 animate-pulse" />
          <span className="text-[10px] text-white font-bold uppercase tracking-widest">Audio Playing</span>
       </div>
     </>
@@ -2002,12 +2002,12 @@ const AdminAdsManager = ({ t, onBack }: { t: (k: string) => string; onBack: () =
         </button>
 
         <div className="flex justify-start items-center mb-6 gap-4 border-b border-zinc-800 pb-4">
-          <div className="w-12 h-12 bg-green-500/20 rounded-2xl flex items-center justify-center border border-green-500/30">
-            <MonitorPlay className="text-green-500" size={24} />
+          <div className="w-12 h-12 bg-gradient-to-r from-green-600 to-purple-600/20 rounded-2xl flex items-center justify-center border border-purple-500/30">
+            <MonitorPlay className="text-green-400" size={24} />
           </div>
           <div>
             <h2 className="text-xl font-black text-white uppercase tracking-wider">Ads Manager</h2>
-            <p className="text-green-500/70 text-[10px] tracking-[0.2em] uppercase font-mono">Control Network Transmissions</p>
+            <p className="text-green-400/70 text-[10px] tracking-[0.2em] uppercase font-mono">Control Network Transmissions</p>
           </div>
         </div>
 
@@ -2023,7 +2023,7 @@ const AdminAdsManager = ({ t, onBack }: { t: (k: string) => string; onBack: () =
             <div className="flex flex-col">
               <div className="w-full max-w-[280px] mx-auto aspect-[4/5] bg-black rounded-3xl overflow-hidden border-4 border-zinc-800 shadow-2xl relative sticky top-0">
                 <div className="absolute top-0 left-0 w-full bg-gradient-to-b from-black/80 to-transparent p-4 z-20 flex justify-between items-center">
-                  <span className="text-white text-xs font-bold tracking-widest uppercase flex items-center gap-2"><Eye size={14} className="text-green-500" /> Live Preview</span>
+                  <span className="text-white text-xs font-bold tracking-widest uppercase flex items-center gap-2"><Eye size={14} className="text-green-400" /> Live Preview</span>
                   <button disabled className="p-2 bg-black/50 rounded-full text-white backdrop-blur-md">
                     <X size={16} />
                   </button>
@@ -2051,7 +2051,7 @@ const AdminAdsManager = ({ t, onBack }: { t: (k: string) => string; onBack: () =
                 {mediaUrls.length > 1 && (
                   <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-2 z-10">
                     {mediaUrls.filter(u => u.trim() !== '').map((_, i) => (
-                      <div key={i} className={cn("w-1.5 h-1.5 rounded-full transition-colors duration-300", 0 === i ? "bg-green-500 shadow-[0_0_8px_#22c55e] scale-125" : "bg-zinc-600")} />
+                      <div key={i} className={cn("w-1.5 h-1.5 rounded-full transition-colors duration-300", 0 === i ? "bg-gradient-to-r from-green-600 to-purple-600 shadow-[0_0_8px_#22c55e] scale-125" : "bg-zinc-600")} />
                     ))}
                   </div>
                 )}
@@ -2064,7 +2064,7 @@ const AdminAdsManager = ({ t, onBack }: { t: (k: string) => string; onBack: () =
                   <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest pl-1 mb-2 block">Campaign Title</label>
                   <input 
                     type="text" value={title} onChange={(e) => setTitle(e.target.value)}
-                    placeholder="e.g. Summer Promo" className="w-full bg-zinc-900 border border-zinc-800 p-4 rounded-xl text-white outline-none focus:border-green-500/50 transition-colors" required
+                    placeholder="e.g. Summer Promo" className="w-full bg-zinc-900 border border-zinc-800 p-4 rounded-xl text-white outline-none focus:border-purple-500/50 transition-colors" required
                   />
                 </div>
                 
@@ -2079,13 +2079,13 @@ const AdminAdsManager = ({ t, onBack }: { t: (k: string) => string; onBack: () =
                           newUrls[i] = e.target.value;
                           setMediaUrls(newUrls);
                         }}
-                        placeholder={`Image or Video URL ${i + 1}`} className="flex-1 bg-zinc-900 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-green-500/50" 
+                        placeholder={`Image or Video URL ${i + 1}`} className="flex-1 bg-zinc-900 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-purple-500/50" 
                       />
                       <label className="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-4 rounded-xl flex items-center justify-center cursor-pointer transition-colors relative overflow-hidden group">
                         <input type="file" accept="image/*,video/*" className="hidden" onChange={(e) => {
                           if(e.target.files?.[0]) handleFileUpload(i, e.target.files[0]);
                         }} />
-                        {isUploading ? <Loader2 size={18} className="animate-spin text-green-500" /> : <Plus size={18} className="text-zinc-400 group-hover:text-green-400" />}
+                        {isUploading ? <Loader2 size={18} className="animate-spin text-green-400" /> : <Plus size={18} className="text-zinc-400 group-hover:text-green-400" />}
                       </label>
                       {mediaUrls.length > 1 && (
                         <button type="button" onClick={() => setMediaUrls(mediaUrls.filter((_, idx) => idx !== i))} className="p-3 bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-xl">
@@ -2097,7 +2097,7 @@ const AdminAdsManager = ({ t, onBack }: { t: (k: string) => string; onBack: () =
                   {mediaUrls.length < 5 && (
                     <button 
                       type="button" onClick={() => setMediaUrls([...mediaUrls, ''])}
-                      className="w-full py-3 bg-zinc-900 border border-dashed border-zinc-800 rounded-xl text-green-500 text-sm font-bold hover:bg-zinc-800/50 transition"
+                      className="w-full py-3 bg-zinc-900 border border-dashed border-zinc-800 rounded-xl text-green-400 text-sm font-bold hover:bg-zinc-800/50 transition"
                     >
                       + Add Another Asset
                     </button>
@@ -2111,13 +2111,13 @@ const AdminAdsManager = ({ t, onBack }: { t: (k: string) => string; onBack: () =
                         <input 
                           type="url" value={soundUrl} 
                           onChange={(e) => setSoundUrl(e.target.value)}
-                          placeholder="URL for audio/music (Optional)" className="flex-1 bg-zinc-900 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-green-500/50" 
+                          placeholder="URL for audio/music (Optional)" className="flex-1 bg-zinc-900 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-purple-500/50" 
                         />
                         <label className="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-4 rounded-xl flex items-center justify-center cursor-pointer transition-colors relative overflow-hidden group">
                           <input type="file" accept="audio/*" className="hidden" onChange={(e) => {
                             if(e.target.files?.[0]) handleFileUpload('sound', e.target.files[0]);
                           }} />
-                          {isUploading ? <Loader2 size={18} className="animate-spin text-green-500" /> : <Plus size={18} className="text-zinc-400 group-hover:text-green-400" />}
+                          {isUploading ? <Loader2 size={18} className="animate-spin text-green-400" /> : <Plus size={18} className="text-zinc-400 group-hover:text-green-400" />}
                         </label>
                     </div>
                     {soundUrl && (
@@ -2126,7 +2126,7 @@ const AdminAdsManager = ({ t, onBack }: { t: (k: string) => string; onBack: () =
                         <input 
                           type="number" step="0.1" min="0" value={audioStartTime} 
                           onChange={(e) => setAudioStartTime(e.target.value)}
-                          className="w-full sm:w-1/2 bg-zinc-900 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-green-500/50" 
+                          className="w-full sm:w-1/2 bg-zinc-900 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-purple-500/50" 
                         />
                       </div>
                     )}
@@ -2191,8 +2191,8 @@ const AdminAdsManager = ({ t, onBack }: { t: (k: string) => string; onBack: () =
 
                   <div className="flex items-center mt-6 pl-1">
                     <label className="flex items-center space-x-3 cursor-pointer group">
-                      <div className={cn("w-6 h-6 rounded-md flex items-center justify-center border transition-colors", isActive ? "bg-green-500 border-green-500" : "bg-zinc-900 border-zinc-700 group-hover:border-zinc-500")}>
-                        {isActive && <Check size={16} className="text-black" />}
+                      <div className={cn("w-6 h-6 rounded-md flex items-center justify-center border transition-colors", isActive ? "bg-gradient-to-r from-green-600 to-purple-600 border-purple-500" : "bg-zinc-900 border-zinc-700 group-hover:border-zinc-500")}>
+                        {isActive && <Check size={16} className="text-zinc-100" />}
                       </div>
                       <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} className="hidden" />
                       <span className="text-white font-bold tracking-wide">ACTIVE SYNC</span>
@@ -2200,7 +2200,7 @@ const AdminAdsManager = ({ t, onBack }: { t: (k: string) => string; onBack: () =
                   </div>
                 </div>
                 
-                <button type="submit" disabled={isUploading || isSaving} className="w-full bg-green-500 hover:bg-green-400 text-black font-black tracking-widest py-4 rounded-xl uppercase transition-colors disabled:opacity-50 mt-4">
+                <button type="submit" disabled={isUploading || isSaving} className="w-full bg-gradient-to-r from-green-600 to-purple-600 hover:from-green-500 hover:to-purple-500 text-zinc-100 font-black tracking-widest py-4 rounded-xl uppercase transition-colors disabled:opacity-50 mt-4">
                   {isSaving ? 'Inasave kwenye Database...' : isUploading ? 'Uploading Data...' : 'Deploy Ad Campaign'}
                 </button>
               </form>
@@ -2231,7 +2231,7 @@ const AdminAdsManager = ({ t, onBack }: { t: (k: string) => string; onBack: () =
                   </h4>
                   <p className="text-xs text-zinc-500 font-mono mt-1.5 flex gap-3">
                     <span><MonitorPlay size={12} className="inline mr-1" />{ad.displayTiming === 'startup' ? 'On Load' : `@ ${ad.intervalMinutes}m`}</span>
-                    <span>{ad.isActive ? <span className="text-green-500"><Check size={10} className="inline" /> ACTV</span> : <span className="text-red-500"><X size={10} className="inline" /> INAC</span>}</span>
+                    <span>{ad.isActive ? <span className="text-green-400"><Check size={10} className="inline" /> ACTV</span> : <span className="text-red-500"><X size={10} className="inline" /> INAC</span>}</span>
                   </p>
                 </div>
               </div>
@@ -2404,7 +2404,7 @@ const AdDisplay = () => {
         {mediaUrls.length > 1 && (
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-2 z-10">
             {mediaUrls.map((_, i) => (
-              <div key={i} className={cn("w-1.5 h-1.5 rounded-full transition-colors duration-300", mediaIndex === i ? "bg-green-500 shadow-[0_0_8px_#22c55e] scale-125" : "bg-zinc-600")} />
+              <div key={i} className={cn("w-1.5 h-1.5 rounded-full transition-colors duration-300", mediaIndex === i ? "bg-gradient-to-r from-green-600 to-purple-600 shadow-[0_0_8px_#22c55e] scale-125" : "bg-zinc-600")} />
             ))}
           </div>
         )}
@@ -2438,7 +2438,7 @@ const AdminDashboard = ({ t, theme }: { t: (k: string) => string, theme: string 
         "rounded-3xl p-6 relative overflow-hidden border shadow-sm",
         theme === 'dark' ? "bg-zinc-900 border-zinc-800" : "bg-white border-zinc-200"
       )}>
-        <h2 className={cn("text-xl font-bold mb-2", theme === 'dark' ? "text-white" : "text-black")}>Admin Dashboard</h2>
+        <h2 className={cn("text-xl font-bold mb-2", theme === 'dark' ? "text-white" : "text-zinc-100")}>Admin Dashboard</h2>
         <p className="text-zinc-500 text-sm">System & Users Overview</p>
       </div>
       
@@ -2447,14 +2447,14 @@ const AdminDashboard = ({ t, theme }: { t: (k: string) => string, theme: string 
           "p-5 rounded-2xl border shadow-sm",
           theme === 'dark' ? "bg-zinc-900 border-zinc-800" : "bg-white border-zinc-200"
         )}>
-          <div className="text-3xl font-black text-green-500">{usersList.length}</div>
+          <div className="text-3xl font-black text-green-400">{usersList.length}</div>
           <div className="text-xs text-zinc-500 uppercase tracking-wider mt-1">Total Users</div>
         </div>
         <div className={cn(
           "p-5 rounded-2xl border shadow-sm",
           theme === 'dark' ? "bg-zinc-900 border-zinc-800" : "bg-white border-zinc-200"
         )}>
-          <div className="text-3xl font-black text-green-500">{todayLogins.length}</div>
+          <div className="text-3xl font-black text-green-400">{todayLogins.length}</div>
           <div className="text-xs text-zinc-500 uppercase tracking-wider mt-1">Active Today</div>
         </div>
       </div>
@@ -2463,13 +2463,13 @@ const AdminDashboard = ({ t, theme }: { t: (k: string) => string, theme: string 
         "rounded-2xl p-6 border shadow-sm",
         theme === 'dark' ? "bg-zinc-900 border-zinc-800" : "bg-white border-zinc-200"
       )}>
-         <h3 className={cn("text-lg font-bold mb-4", theme === 'dark' ? "text-white" : "text-black")}>Active Today ({todayStr})</h3>
+         <h3 className={cn("text-lg font-bold mb-4", theme === 'dark' ? "text-white" : "text-zinc-100")}>Active Today ({todayStr})</h3>
          <div className="space-y-4">
             {todayLogins.map(u => (
               <div key={u.uid} className={cn("flex items-center gap-3 border-b pb-3 last:border-0 last:pb-0", theme === 'dark' ? "border-zinc-800" : "border-zinc-100")}>
                  <img src={u.photoURL} className="w-10 h-10 rounded-full" alt="Profile" />
                  <div>
-                   <p className={cn("text-sm font-medium", theme === 'dark' ? "text-white" : "text-black")}>{u.displayName}</p>
+                   <p className={cn("text-sm font-medium", theme === 'dark' ? "text-white" : "text-zinc-100")}>{u.displayName}</p>
                    <p className="text-zinc-500 text-xs">{u.email}</p>
                  </div>
               </div>
@@ -2484,17 +2484,17 @@ const AdminDashboard = ({ t, theme }: { t: (k: string) => string, theme: string 
         "rounded-2xl p-6 border shadow-sm",
         theme === 'dark' ? "bg-zinc-900 border-zinc-800" : "bg-white border-zinc-200"
       )}>
-         <h3 className={cn("text-lg font-bold mb-4", theme === 'dark' ? "text-white" : "text-black")}>All Users</h3>
+         <h3 className={cn("text-lg font-bold mb-4", theme === 'dark' ? "text-white" : "text-zinc-100")}>All Users</h3>
          <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
             {usersList.map(u => (
               <div key={u.uid} className={cn("flex items-center gap-3 border-b pb-3 last:border-0 last:pb-0", theme === 'dark' ? "border-zinc-800" : "border-zinc-100")}>
                  <img src={u.photoURL} className="w-10 h-10 rounded-full" alt="Profile" />
                  <div className="flex-1">
-                   <p className={cn("text-sm font-medium", theme === 'dark' ? "text-white" : "text-black")}>{u.displayName}</p>
+                   <p className={cn("text-sm font-medium", theme === 'dark' ? "text-white" : "text-zinc-100")}>{u.displayName}</p>
                    <p className="text-zinc-500 text-xs">{u.email}</p>
                  </div>
                  <div className="text-right">
-                    <span className={cn("text-[10px] px-2 py-1 rounded-full uppercase font-bold", u.role === 'admin' ? "bg-red-500/10 text-red-500" : "bg-green-500/10 text-green-500")}>
+                    <span className={cn("text-[10px] px-2 py-1 rounded-full uppercase font-bold", u.role === 'admin' ? "bg-red-500/10 text-red-500" : "bg-gradient-to-r from-green-600 to-purple-600/10 text-green-400")}>
                       {u.role}
                     </span>
                  </div>
@@ -2906,44 +2906,49 @@ export default function App() {
     return (
       <div className={cn(
         "min-h-screen flex flex-col items-center justify-center p-6 relative transition-colors duration-300",
-        theme === 'dark' ? "bg-black text-white" : "bg-zinc-50 text-black"
+        theme === 'dark' ? "bg-black text-white" : "bg-black text-white"
       )}>
         <div className="relative flex flex-col items-center">
           <div className="relative mb-8">
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-              className="absolute -inset-4 rounded-[40px] border border-green-500/20"
+              className="absolute -inset-4 rounded-[40px] border border-purple-500/20"
               style={{ borderTopColor: 'transparent', borderBottomColor: 'transparent' }}
             />
             <motion.div
               animate={{ rotate: -360 }}
               transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
-              className="absolute -inset-8 rounded-[48px] border border-green-500/10"
+              className="absolute -inset-8 rounded-[48px] border border-purple-500/10"
               style={{ borderLeftColor: 'transparent', borderRightColor: 'transparent' }}
             />
             <motion.div
               animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.6, 0.3] }}
               transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute inset-0 bg-green-500 blur-3xl opacity-30 rounded-full"
+              className="absolute inset-0 bg-gradient-to-r from-green-600 to-purple-600 blur-3xl opacity-30 rounded-full"
             />
             <div className={cn(
               "relative z-10 flex items-center justify-center w-24 h-24 rounded-[32px] overflow-hidden backdrop-blur-xl border shadow-xl transition-colors duration-500",
-              theme === 'dark' ? "bg-zinc-900/80 border-zinc-800 shadow-black/50" : "bg-white/80 border-zinc-200 shadow-zinc-200"
+              theme === 'dark' ? "bg-black border-zinc-800 shadow-purple-500/20" : "bg-black border-zinc-800 shadow-purple-500/20"
             )}>
-              <div className="absolute inset-0 bg-gradient-to-tr from-green-500/10 to-transparent" />
-              <Shield size={40} className="text-green-500 drop-shadow-[0_0_15px_rgba(34,197,94,0.5)]" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-green-500/10 via-black to-purple-500/10" />
+              <motion.div
+                animate={{ rotateY: 360 }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              >
+                <span className="text-4xl drop-shadow-[0_0_15px_rgba(34,197,94,0.5)]">🏆</span>
+              </motion.div>
               <motion.div
                 animate={{ y: ['100%', '-100%'] }}
                 transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute inset-0 bg-gradient-to-b from-transparent via-green-400/20 to-transparent h-1/2 w-full"
+                className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-500/20 to-transparent h-1/2 w-full"
               />
             </div>
           </div>
           
           <h2 className="text-xl font-bold tracking-tight mb-2 flex items-center justify-center">
-            <span className={theme === 'dark' ? "text-white" : "text-black"}>CYBER</span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-green-400 ml-1">HACKS</span>
+            <span className="text-white">CYBER</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-purple-500 ml-1">HACKS</span>
           </h2>
           
           <div className="flex items-center gap-2">
@@ -2951,8 +2956,7 @@ export default function App() {
               animate={{ opacity: [0.4, 1, 0.4] }}
               transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
               className={cn(
-                "text-[10px] font-bold tracking-[0.3em] uppercase",
-                theme === 'dark' ? "text-zinc-500" : "text-zinc-400"
+                "text-[10px] font-bold tracking-[0.3em] uppercase text-zinc-400"
               )}
             >
               {lang === 'sw' ? 'Inapakia Data...' : 'Loading Data...'}
@@ -2967,7 +2971,7 @@ export default function App() {
     return (
       <div className={cn(
         "min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 text-center transition-colors duration-300",
-        theme === 'dark' ? "bg-zinc-950 text-white" : "bg-zinc-50 text-zinc-900"
+        theme === 'dark' ? "bg-black text-white" : "bg-black text-zinc-100"
       )}>
         <div className="relative z-10 w-full max-w-sm">
           <motion.div
@@ -2980,7 +2984,7 @@ export default function App() {
               "flex items-center justify-center w-16 h-16 mb-4 rounded-2xl shadow-sm border",
               theme === 'dark' ? "bg-zinc-900 border-zinc-800" : "bg-white border-zinc-200"
             )}>
-              <Shield size={28} className="text-green-500" />
+              <Shield size={28} className="text-green-400" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight mb-2">
               CYBER HACKS
@@ -3015,7 +3019,7 @@ export default function App() {
                           "w-full rounded-xl py-3 pl-11 pr-4 focus:outline-none transition-all text-sm border",
                           theme === 'dark' 
                             ? "bg-zinc-900/50 border-zinc-800 text-white focus:border-zinc-700 placeholder-zinc-600" 
-                            : "bg-white border-zinc-200 text-zinc-900 focus:border-zinc-300 placeholder-zinc-400"
+                            : "bg-white border-zinc-200 text-zinc-100 focus:border-zinc-300 placeholder-zinc-400"
                         )}
                       />
                     </div>
@@ -3033,7 +3037,7 @@ export default function App() {
                         "w-full rounded-xl py-3 pl-11 pr-4 focus:outline-none transition-all text-sm border",
                         theme === 'dark' 
                           ? "bg-zinc-900/50 border-zinc-800 text-white focus:border-zinc-700 placeholder-zinc-600" 
-                          : "bg-white border-zinc-200 text-zinc-900 focus:border-zinc-300 placeholder-zinc-400"
+                          : "bg-white border-zinc-200 text-zinc-100 focus:border-zinc-300 placeholder-zinc-400"
                       )}
                     />
                   </div>
@@ -3051,7 +3055,7 @@ export default function App() {
                           "w-full rounded-xl py-3 pl-11 pr-11 focus:outline-none transition-all text-sm border",
                           theme === 'dark' 
                             ? "bg-zinc-900/50 border-zinc-800 text-white focus:border-zinc-700 placeholder-zinc-600" 
-                            : "bg-white border-zinc-200 text-zinc-900 focus:border-zinc-300 placeholder-zinc-400"
+                            : "bg-white border-zinc-200 text-zinc-100 focus:border-zinc-300 placeholder-zinc-400"
                         )}
                       />
                       <button 
@@ -3084,7 +3088,7 @@ export default function App() {
                   className={cn(
                     "w-full font-semibold py-3 rounded-xl transition-all shadow-sm",
                     theme === 'dark' 
-                      ? "bg-white text-black hover:bg-zinc-200" 
+                      ? "bg-white text-zinc-100 hover:bg-zinc-200" 
                       : "bg-black text-white hover:bg-zinc-800"
                   )}
                 >
@@ -3111,14 +3115,14 @@ export default function App() {
                     "w-full py-3 rounded-xl border flex items-center justify-center gap-2 text-sm font-semibold transition-all shadow-sm",
                     theme === 'dark'
                       ? "border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 text-zinc-300"
-                      : "border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-700"
+                      : "border-zinc-200 bg-black hover:bg-zinc-100 text-zinc-700"
                   )}
                 >
                   <span className="font-normal opacity-70">
                     {authMode === 'login' ? t('noAccount') : t('hasAccount')}
                   </span>
                   <span className={cn(
-                    theme === 'dark' ? "text-white" : "text-black"
+                    theme === 'dark' ? "text-white" : "text-zinc-100"
                   )}>
                     {authMode === 'login' ? t('signUp') : t('login')}
                   </span>
@@ -3134,16 +3138,16 @@ export default function App() {
   return (
     <div className={cn(
       "min-h-screen pb-24 transition-colors duration-300",
-      theme === 'dark' ? "bg-black text-white" : "bg-zinc-50 text-black"
+      theme === 'dark' ? "bg-black text-white" : "bg-black text-zinc-100"
     )}>
       <AdDisplay />
       {/* Header */}
       <header className="sticky top-0 z-40 bg-inherit/80 backdrop-blur-md px-6 py-4 flex justify-between items-center max-w-md mx-auto">
         <div>
-          <h1 className="text-xl font-black italic tracking-tighter text-green-500">CYBER HACKS</h1>
+          <h1 className="text-xl font-black italic tracking-tighter text-white">CYBER HACKS</h1>
           <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">{t('welcome')}, {profile?.displayName.split(' ')[0]}</p>
         </div>
-        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-green-500 shadow-lg shadow-green-500/20">
+        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-purple-500 shadow-lg shadow-purple-500/20">
           {profile?.photoURL ? (
             <img src={profile.photoURL} alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
           ) : (
@@ -3160,7 +3164,7 @@ export default function App() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] bg-green-500 text-black px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2"
+            className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] bg-gradient-to-r from-green-600 to-purple-600 text-zinc-100 px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2"
           >
             <Bell size={16} />
             {toast}
@@ -3175,7 +3179,7 @@ export default function App() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t('searchPlaceholder')}
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl py-4 pl-12 pr-12 focus:outline-none focus:border-green-500 transition-colors text-sm"
+              className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl py-4 pl-12 pr-12 focus:outline-none focus:border-purple-500 transition-colors text-sm"
             />
             {searchQuery && (
               <button 
@@ -3229,8 +3233,8 @@ export default function App() {
                 )}
                 {dataLoading && (
                   <div className="col-span-2 py-20 flex flex-col items-center justify-center text-zinc-500">
-                    <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}>
-                      <RefreshCw size={32} className="opacity-50 mb-4" />
+                    <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }} className="mb-4 text-3xl">
+                      ⚽
                     </motion.div>
                     <p className="text-sm uppercase tracking-widest font-bold opacity-50">Loading data...</p>
                   </div>
@@ -3241,7 +3245,7 @@ export default function App() {
                 <button 
                   type="button"
                   onClick={() => setModalOpen('post')}
-                  className="w-full py-4 border-2 border-dashed border-zinc-800 rounded-2xl flex items-center justify-center gap-2 text-zinc-500 hover:text-green-500 hover:border-green-500 transition-all cursor-pointer active:scale-95"
+                  className="w-full py-4 border-2 border-dashed border-zinc-800 rounded-2xl flex items-center justify-center gap-2 text-zinc-500 hover:text-green-400 hover:border-purple-500 transition-all cursor-pointer active:scale-95"
                 >
                   <Plus size={20} />
                   {t('addNewHack')}
@@ -3259,7 +3263,7 @@ export default function App() {
               transition={{ duration: 0.2 }}
               className="space-y-4"
             >
-              <div className="bg-gradient-to-br from-green-500 to-green-700 rounded-3xl p-6 text-black mb-6">
+              <div className="bg-gradient-to-br from-green-500 to-purple-700 rounded-3xl p-6 text-zinc-100 mb-6">
                 <h2 className="text-2xl font-black italic mb-1">{t('freeAccess')}</h2>
                 <p className="text-sm font-medium opacity-80 mb-4">{t('enjoyFree')}</p>
               </div>
@@ -3295,7 +3299,7 @@ export default function App() {
                 <button 
                   type="button"
                   onClick={() => setModalOpen('app')}
-                  className="w-full py-4 border-2 border-dashed border-zinc-800 rounded-2xl flex items-center justify-center gap-2 text-zinc-500 hover:text-green-500 hover:border-green-500 transition-all cursor-pointer active:scale-95"
+                  className="w-full py-4 border-2 border-dashed border-zinc-800 rounded-2xl flex items-center justify-center gap-2 text-zinc-500 hover:text-green-400 hover:border-purple-500 transition-all cursor-pointer active:scale-95"
                 >
                   <Plus size={20} />
                   {t('addPremiumApp')}
@@ -3341,7 +3345,7 @@ export default function App() {
                 <button 
                   type="button"
                   onClick={() => setModalOpen('news')}
-                  className="w-full py-4 border-2 border-dashed border-zinc-800 rounded-2xl flex items-center justify-center gap-2 text-zinc-500 hover:text-green-500 hover:border-green-500 transition-all cursor-pointer active:scale-95"
+                  className="w-full py-4 border-2 border-dashed border-zinc-800 rounded-2xl flex items-center justify-center gap-2 text-zinc-500 hover:text-green-400 hover:border-purple-500 transition-all cursor-pointer active:scale-95"
                 >
                   <Plus size={20} />
                   {t('addNews')}
@@ -3386,7 +3390,7 @@ export default function App() {
                 <button 
                   type="button"
                   onClick={() => setModalOpen('aiprompt')}
-                  className="w-full py-4 border-2 border-dashed border-zinc-800 rounded-2xl flex items-center justify-center gap-2 text-zinc-500 hover:text-green-500 hover:border-green-500 transition-all cursor-pointer active:scale-95"
+                  className="w-full py-4 border-2 border-dashed border-zinc-800 rounded-2xl flex items-center justify-center gap-2 text-zinc-500 hover:text-green-400 hover:border-purple-500 transition-all cursor-pointer active:scale-95"
                 >
                   <Plus size={20} />
                   Add AI Prompt
@@ -3420,7 +3424,7 @@ export default function App() {
                     <p className="text-xs text-zinc-500">{profile?.email}</p>
                     <span className={cn(
                       "inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-black uppercase",
-                      profile?.isPremium ? "bg-green-500 text-black" : "bg-zinc-800 text-zinc-400"
+                      profile?.isPremium ? "bg-gradient-to-r from-green-600 to-purple-600 text-zinc-100" : "bg-zinc-800 text-zinc-400"
                     )}>
                       {profile?.isPremium ? t('premiumMember') : t('freeMember')}
                     </span>
@@ -3433,7 +3437,7 @@ export default function App() {
                     className="w-full flex items-center justify-between p-3 hover:bg-zinc-800 rounded-xl transition-colors group"
                   >
                     <div className="flex items-center gap-3">
-                      <Globe size={20} className="text-zinc-500 group-hover:text-green-500" />
+                      <Globe size={20} className="text-zinc-500 group-hover:text-green-400" />
                       <span className="text-sm font-medium">{t('language')}</span>
                     </div>
                     <span className="text-xs text-zinc-500">{t('langName')}</span>
@@ -3459,17 +3463,17 @@ export default function App() {
                     className="w-full flex items-center justify-between p-4 hover:bg-zinc-800 transition-colors border-b border-zinc-800"
                   >
                     <div className="flex items-center gap-3">
-                      <Phone size={20} className="text-green-500" />
+                      <Phone size={20} className="text-green-400" />
                       <span className="text-sm font-medium">{t('contactWa')}</span>
                     </div>
                     <ChevronRight size={16} className="text-zinc-600" />
                   </button>
                   <button 
-                    onClick={() => handleExternalLink('https://chat.whatsapp.com/Ji8gpXkqB23AatsdtC83nB?mode=gi_t')}
+                    onClick={() => handleExternalLink('https://chat.whatsapp.com/I2J50RscRRA9T5qK0Bn4mp')}
                     className="w-full flex items-center justify-between p-4 hover:bg-zinc-800 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <Users size={20} className="text-green-500" />
+                      <Users size={20} className="text-green-400" />
                       <span className="text-sm font-medium">{t('officialGroup')}</span>
                     </div>
                     <ChevronRight size={16} className="text-zinc-600" />
@@ -3483,7 +3487,7 @@ export default function App() {
                   <div className="bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800">
                     <button onClick={() => setAdsManagerOpen(true)} className="w-full flex items-center justify-between p-4 hover:bg-zinc-800 transition-colors">
                       <div className="flex items-center gap-3">
-                        <MonitorPlay size={20} className="text-green-500" />
+                        <MonitorPlay size={20} className="text-green-400" />
                         <span className="text-sm font-medium">Manage Ad Campaigns</span>
                       </div>
                       <ChevronRight size={16} className="text-zinc-600" />
@@ -3668,7 +3672,7 @@ export default function App() {
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-              className="w-16 h-16 border-4 border-green-500 border-t-transparent flex items-center justify-center rounded-full mb-6"
+              className="w-16 h-16 border-4 border-purple-500 border-t-transparent flex items-center justify-center rounded-full mb-6"
             >
               <div className="w-8 h-8 border-4 border-zinc-700 border-b-transparent rounded-full" />
             </motion.div>
