@@ -1,16 +1,15 @@
 export interface HomePost {
   id: string;
+  authorId?: string;
   title: string;
   image: string;
   link: string;
   createdAt?: any;
   reactions?: {
-    laugh?: number;
-    think?: number;
-    angry?: number;
+    like?: number;
   };
   userReactions?: {
-    [userId: string]: 'laugh' | 'think' | 'angry';
+    [userId: string]: 'like';
   };
   password?: string;
   passwordRequestMsg?: string;
@@ -18,6 +17,7 @@ export interface HomePost {
 
 export interface PremiumApp {
   id: string;
+  authorId?: string;
   name: string;
   description: string;
   image: string;
@@ -25,30 +25,39 @@ export interface PremiumApp {
   createdAt?: any;
   password?: string;
   passwordRequestMsg?: string;
+  reactions?: { like?: number };
+  userReactions?: { [userId: string]: 'like' };
 }
 
 export interface AiPrompt {
   id: string;
+  authorId?: string;
   image: string;
   promptText: string;
   createdAt?: any;
   title?: string;
   password?: string;
   passwordRequestMsg?: string;
+  reactions?: { like?: number };
+  userReactions?: { [userId: string]: 'like' };
 }
 
 export interface CyberNews {
   id: string;
+  authorId?: string;
   title: string;
   content: string;
   image?: string;
   createdAt?: any;
   password?: string;
   passwordRequestMsg?: string;
+  reactions?: { like?: number };
+  userReactions?: { [userId: string]: 'like' };
 }
 
 export interface CustomAd {
   id: string;
+  authorId?: string;
   title: string;
   mediaUrls: string[];
   mediaType: 'image' | 'video';
@@ -69,11 +78,16 @@ export interface CustomAd {
 
 export interface UserProfile {
   uid: string;
+  authorId?: string;
   email: string;
   displayName: string;
   photoURL: string;
   isPremium: boolean;
+  followers?: string[];
+  following?: string[];
   role: 'admin' | 'user';
+  verified?: boolean;
+  banned?: boolean;
   lastActiveDate?: string;
   createdAt?: any;
 }

@@ -75,7 +75,7 @@ service cloud.firestore {
     }
 
     function isValidUser(data) {
-      return data.email is string && 
+      return data.email is string &&
              data.displayName is string &&
              data.photoURL is string &&
              data.isPremium is bool &&
@@ -97,34 +97,40 @@ service cloud.firestore {
     // Rules
     match /home_posts/{postId} {
       allow read: if true;
-      allow create, delete: if isHardcodedAdmin() || (isAdmin() && isValidHomePost(request.resource.data));
+      allow create: if isHardcodedAdmin() || (isAuthenticated() && request.resource.data.authorId == request.auth.uid && isValidHomePost(request.resource.data));
+      allow delete: if isHardcodedAdmin() || isAdmin() || (isAuthenticated() && resource.data.authorId == request.auth.uid);
       allow update: if isHardcodedAdmin() || 
+                       (isAuthenticated() && resource.data.authorId == request.auth.uid && isValidHomePost(request.resource.data)) ||
                        (isAdmin() && isValidHomePost(request.resource.data)) ||
                        (isAuthenticated() && isValidReactionUpdate());
     }
 
     match /premium_apk/{appId} {
       allow read: if true;
-      allow create, update, delete: if isHardcodedAdmin() || (isAdmin() && isValidPremiumApp(request.resource.data));
+      allow create: if isHardcodedAdmin() || (isAuthenticated() && request.resource.data.authorId == request.auth.uid && isValidPremiumApp(request.resource.data));
+      allow update: if isHardcodedAdmin() || (isAuthenticated() && resource.data.authorId == request.auth.uid && isValidPremiumApp(request.resource.data)) || (isAdmin() && isValidPremiumApp(request.resource.data)) || (isAuthenticated() && isValidReactionUpdate());
+      allow delete: if isHardcodedAdmin() || isAdmin() || (isAuthenticated() && resource.data.authorId == request.auth.uid);
     }
 
     match /cyber_news/{newsId} {
       allow read: if true;
-      allow create, update, delete: if isHardcodedAdmin() || (isAdmin() && isValidCyberNews(request.resource.data));
+      allow create: if isHardcodedAdmin() || (isAuthenticated() && request.resource.data.authorId == request.auth.uid && isValidCyberNews(request.resource.data));
+      allow update: if isHardcodedAdmin() || (isAuthenticated() && resource.data.authorId == request.auth.uid && isValidCyberNews(request.resource.data)) || (isAdmin() && isValidCyberNews(request.resource.data)) || (isAuthenticated() && isValidReactionUpdate());
+      allow delete: if isHardcodedAdmin() || isAdmin() || (isAuthenticated() && resource.data.authorId == request.auth.uid);
     }
 
     match /ai_prompts/{promptId} {
       allow read: if true;
-      allow create, update, delete: if isHardcodedAdmin() || (isAdmin() && isValidAiPrompt(request.resource.data));
+      allow create: if isHardcodedAdmin() || (isAuthenticated() && request.resource.data.authorId == request.auth.uid && isValidAiPrompt(request.resource.data));
+      allow update: if isHardcodedAdmin() || (isAuthenticated() && resource.data.authorId == request.auth.uid && isValidAiPrompt(request.resource.data)) || (isAdmin() && isValidAiPrompt(request.resource.data)) || (isAuthenticated() && isValidReactionUpdate());
+      allow delete: if isHardcodedAdmin() || isAdmin() || (isAuthenticated() && resource.data.authorId == request.auth.uid);
     }
 
     match /users/{userId} {
-      allow read: if isOwner(userId) || isAdmin();
+      allow read: if true;
       allow create: if isAuthenticated() && isOwner(userId) && 
                       (request.resource.data.role == 'user' || (request.resource.data.role == 'admin' && isHardcodedAdmin()));
-      allow update: if (isOwner(userId) && 
-                        request.resource.data.role == resource.data.role) || 
-                      isAdmin();
+      allow update: if (isOwner(userId) && request.resource.data.role == resource.data.role) || isAdmin() || (isAuthenticated() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followers', 'following']));
     }
 
     match /ads/{adId} {
