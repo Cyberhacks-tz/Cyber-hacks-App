@@ -55,7 +55,7 @@ import {
   ChevronRight,
   Mail,
   Key,
-  Search,
+  Search, ChevronLeft,
   X,
   Pencil,
   Send,
@@ -66,6 +66,7 @@ import {
   Copy,
   Eye,
   EyeOff,
+  Heart,
   Share2,
   Languages,
   Loader2,
@@ -343,9 +344,12 @@ const CodeBlock = ({ inline, className, children, ...props }: any) => {
         >
           {codeString}
         </SyntaxHighlighter>
-      </div>
-    );
-  }
+        
+      
+      
+    </div>
+  );
+}
   
   return (
     <code className={cn("bg-zinc-800 px-1.5 py-0.5 rounded text-sm text-green-400 font-mono", className)} {...props}>
@@ -376,6 +380,12 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
       >
         {preprocessMarkdown(content)}
       </ReactMarkdown>
+
+      
+
+      
+      
+      
     </div>
   );
 };
@@ -543,23 +553,7 @@ interface CardProps {
 const Card: React.FC<CardProps> = ({ title, image, link, onClick, isAdmin, canEdit, onDelete, onEdit, reactions, userReaction, onReact, createdAt, password, passwordRequestMsg, t, index = 0, author, onAuthorClick, currentUserId, onFollowToggle }) => {
   const [isOpening, setIsOpening] = useState(false);
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
-  const [fakeLikes, setFakeLikes] = useState(0);
-
-  useEffect(() => {
-    if (isAdmin || !createdAt) return;
-    const calculateOffsets = () => {
-      const now = Date.now();
-      const createdTime = createdAt?.toMillis ? createdAt.toMillis() : new Date(createdAt).getTime();
-      if (isNaN(createdTime)) return;
-      const hoursElapsed = (now - createdTime) / (1000 * 60 * 60);
-      setFakeLikes(Math.floor(hoursElapsed * 1.5) + 5);
-    };
-    calculateOffsets();
-    const interval = setInterval(calculateOffsets, 60000);
-    return () => clearInterval(interval);
-  }, [isAdmin, createdAt]);
-
-  const displayLikes = isAdmin ? (reactions?.like || 0) : ((reactions?.like || 0) + fakeLikes);
+  
   const isLiked = userReaction === 'like';
 
   const handleOpen = async () => {
@@ -658,8 +652,24 @@ const Card: React.FC<CardProps> = ({ title, image, link, onClick, isAdmin, canEd
           <Globe size={32} className="text-zinc-700" />
         </div>
       )}
+      <div className="absolute bottom-2 right-2 z-10 flex gap-2">
+        {author && currentUserId && author.uid !== currentUserId && onFollowToggle && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onFollowToggle(author.uid);
+            }}
+            className={cn("px-3 py-1 rounded-full text-[10px] font-bold transition-colors shadow-lg backdrop-blur-md border border-white/10", 
+              author.followers?.includes(currentUserId) 
+              ? "bg-black/50 text-white hover:bg-black/70" 
+              : "bg-blue-600/90 text-white hover:bg-blue-600"
+            )}
+          >
+            {author.followers?.includes(currentUserId) ? 'Following' : 'Follow'}
+          </button>
+        )}
+      </div>
     </div>
-    
     <div className="p-3 flex justify-between items-center bg-zinc-50 dark:bg-zinc-800/50">
       <div className="flex items-center gap-2 flex-1 min-w-0" onClick={(e) => {
         if(onAuthorClick) { e.stopPropagation(); onAuthorClick(); }
@@ -680,34 +690,20 @@ const Card: React.FC<CardProps> = ({ title, image, link, onClick, isAdmin, canEd
       </div>
       
       <div className="flex items-center gap-2 flex-shrink-0">
-        {author && currentUserId && author.uid !== currentUserId && onFollowToggle && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onFollowToggle(author.uid);
-            }}
-            className={cn("px-3 py-1 rounded-full text-[10px] font-bold transition-colors", 
-              author.followers?.includes(currentUserId) 
-              ? "bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400" 
-              : "bg-blue-600 text-white hover:bg-blue-700"
-            )}
-          >
-            {author.followers?.includes(currentUserId) ? 'Following' : 'Follow'}
-          </button>
-        )}
-        <button
+        
+        <motion.button
+        whileTap={{ scale: 0.8 }}
         onClick={(e) => {
           e.stopPropagation();
           onReact?.('like');
         }}
         className={cn(
-          "flex items-center gap-1 text-xs px-2 py-1 rounded-full transition-colors",
-          isLiked ? "bg-red-100 dark:bg-red-900/30 text-red-500" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+          "flex items-center gap-1 text-xs px-2 py-1 rounded-full transition-colors duration-300",
+          isLiked ? "bg-red-900/30 text-red-500" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-red-500"
         )}
       >
-        <span>♥️</span>
-        <span className="font-medium">{displayLikes}</span>
-      </button>
+        <Heart size={12} className={(userReaction === "like") ? "fill-red-500 text-red-500" : "fill-transparent text-zinc-800 dark:text-zinc-300"} />
+      </motion.button>
       </div>
     </div>
   </motion.div>
@@ -767,7 +763,7 @@ const PremiumCard: React.FC<PremiumCardProps> = ({ app, onDownload, isAdmin, can
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.05 }}
-      className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800 flex gap-4 items-center shadow-lg relative overflow-hidden"
+            className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800 flex flex-col gap-4 shadow-lg relative overflow-hidden"
     >
       {isDownloading && (
         <motion.div 
@@ -783,109 +779,111 @@ const PremiumCard: React.FC<PremiumCardProps> = ({ app, onDownload, isAdmin, can
           </motion.div>
         </motion.div>
       )}
-      <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-zinc-800">
-        {app.image ? (
-          <img src={app.image} alt={app.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Shield size={24} className="text-zinc-700" />
-          </div>
-        )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <h3 className="font-bold text-zinc-100 truncate">
-          {app.name} {app.password && app.password.trim() !== '' && <span className="ml-1" title="Premium">👑</span>}
-        </h3>
-        <div className="relative">
-          <p className={cn("text-xs text-zinc-400 whitespace-pre-wrap", !isExpanded && "line-clamp-2")}>
-            {app.description || ''}
-          </p>
-          {((app.description || '').length > 50 || (app.description || '').includes('\n')) && (
-            <button 
-              onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }} 
-              className="text-xs text-green-400 font-medium mt-1 hover:underline"
-            >
-              {isExpanded ? t('seeLess') : t('seeMore')}
-            </button>
+      <div className="flex gap-4 items-center">
+        <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-zinc-800">
+          {app.image ? (
+            <img src={app.image} alt={app.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Shield size={24} className="text-zinc-700" />
+            </div>
           )}
         </div>
-        {(isAdmin || canEdit) && app.password && (
-          <div className="mt-1 px-2 py-0.5 bg-black/80 text-green-400 rounded text-[10px] font-mono inline-flex items-center gap-1">
-            <Key size={10} /> {app.password}
-          </div>
-        )}
-      
-        <div className="mt-3 flex items-center justify-between">
-          <div className="flex items-center gap-2 cursor-pointer flex-1 min-w-0" onClick={(e) => {
-            if(onAuthorClick) { e.stopPropagation(); onAuthorClick(); }
-          }}>
-            {author?.photoURL ? (
-              <img src={author.photoURL} alt={author.displayName} className="w-5 h-5 rounded-full flex-shrink-0 object-cover border border-zinc-700" />
-            ) : (
-              <div className="w-5 h-5 rounded-full flex-shrink-0 bg-zinc-700 flex items-center justify-center">
-                <UserIcon size={10} className="text-zinc-400" />
-              </div>
-            )}
-            <div className="flex items-center min-w-0">
-              <span className="text-[10px] font-medium text-zinc-400 hover:underline truncate">{author?.displayName || 'User'}</span>
-              {author?.verified && <BadgeCheck size={10} className="text-blue-500 ml-1 flex-shrink-0" />}
-            </div>
-          </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {author && currentUserId && author.uid !== currentUserId && onFollowToggle && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onFollowToggle(author.uid);
-                }}
-                className={cn("px-2 py-0.5 rounded-full text-[9px] font-bold transition-colors", 
-                  author.followers?.includes(currentUserId) 
-                  ? "bg-zinc-800 text-zinc-400" 
-                  : "bg-blue-600 text-white hover:bg-blue-700"
-                )}
+        <div className="flex-1 min-w-0">
+          <h3 className="font-bold text-zinc-100 truncate">
+            {app.name} {app.password && app.password.trim() !== '' && <span className="ml-1" title="Premium">👑</span>}
+          </h3>
+          <div className="relative">
+            <p className={cn("text-xs text-zinc-400 whitespace-pre-wrap", !isExpanded && "line-clamp-2")}>
+              {app.description || ''}
+            </p>
+            {((app.description || '').length > 50 || (app.description || '').includes('\n')) && (
+              <button 
+                onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }} 
+                className="text-xs text-green-400 font-medium mt-1 hover:underline"
               >
-                {author.followers?.includes(currentUserId) ? 'Following' : 'Follow'}
+                {isExpanded ? t('seeLess') : t('seeMore')}
               </button>
             )}
-            <button
-            onClick={(e) => { e.stopPropagation(); onReact?.('like'); }}
-            className={`flex items-center gap-1 text-[10px] px-2 py-1 rounded-full transition-colors ${userReaction === 'like' ? 'bg-red-900/30 text-red-500' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}
-          >
-            <span>♥️</span>
-            <span className="font-medium">{reactions?.like || 0}</span>
-          </button>
           </div>
+          {(isAdmin || canEdit) && app.password && (
+            <div className="mt-1 px-2 py-0.5 bg-black/80 text-green-400 rounded text-[10px] font-mono inline-flex items-center gap-1">
+              <Key size={10} /> {app.password}
+            </div>
+          )}
+        </div>
+        <div className="flex flex-col gap-2 shrink-0">
+          <button 
+            onClick={handleDownload}
+            className="p-3 rounded-xl transition-all bg-gradient-to-r from-green-600 to-purple-600 text-zinc-100 hover:from-green-500 hover:to-purple-500"
+          >
+            <Download size={20} />
+          </button>
+          {isAdmin && (
+            <div className="flex gap-2">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit?.();
+                }}
+                className="p-3 bg-zinc-800 text-zinc-400 rounded-xl hover:bg-zinc-700 transition-colors"
+              >
+                <Pencil size={20} />
+              </button>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete?.();
+                }}
+                className="p-3 bg-red-500/20 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-colors"
+              >
+                <Trash2 size={20} />
+              </button>
+            </div>
+          )}
         </div>
       </div>
-      <div className="flex flex-col gap-2">
-        <button 
-          onClick={handleDownload}
-          className="p-3 rounded-xl transition-all bg-gradient-to-r from-green-600 to-purple-600 text-zinc-100 hover:from-green-500 hover:to-purple-500"
-        >
-          <Download size={20} />
-        </button>
-        {isAdmin && (
-          <div className="flex gap-2">
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit?.();
-              }}
-              className="p-3 bg-zinc-800 text-zinc-400 rounded-xl hover:bg-zinc-700 transition-colors"
-            >
-              <Pencil size={20} />
-            </button>
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete?.();
-              }}
-              className="p-3 bg-red-500/20 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-colors"
-            >
-              <Trash2 size={20} />
-            </button>
+      
+      <div className="flex items-center justify-between border-t border-zinc-800 pt-3">
+        <div className="flex items-center gap-3 cursor-pointer flex-1 min-w-0" onClick={(e) => {
+          if(onAuthorClick) { e.stopPropagation(); onAuthorClick(); }
+        }}>
+          {author?.photoURL ? (
+            <img src={author.photoURL} alt={author.displayName} className="w-8 h-8 rounded-full flex-shrink-0 object-cover border border-zinc-600" />
+          ) : (
+            <div className="w-8 h-8 rounded-full flex-shrink-0 bg-zinc-700 flex items-center justify-center border border-zinc-600">
+              <UserIcon size={14} className="text-zinc-400" />
+            </div>
+          )}
+          <div className="flex items-center min-w-0">
+            <span className="text-xs font-bold text-zinc-200 hover:underline truncate">{author?.displayName || 'User'}</span>
+            {author?.verified && <BadgeCheck size={14} className="text-blue-500 ml-1 flex-shrink-0" />}
           </div>
-        )}
+        </div>
+        <div className="flex items-center gap-3 flex-shrink-0">
+          {author && currentUserId && author.uid !== currentUserId && onFollowToggle && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onFollowToggle(author.uid);
+              }}
+              className={cn("px-4 py-1.5 rounded-full text-[10px] font-bold transition-colors shadow-sm", 
+                author.followers?.includes(currentUserId) 
+                ? "bg-zinc-800 text-zinc-400" 
+                : "bg-blue-600 text-white hover:bg-blue-700"
+              )}
+            >
+              {author.followers?.includes(currentUserId) ? 'Following' : 'Follow'}
+            </button>
+          )}
+          <motion.button
+          whileTap={{ scale: 0.8 }}
+          onClick={(e) => { e.stopPropagation(); onReact?.('like'); }}
+          className={`flex items-center gap-1 text-[10px] px-2 py-1 rounded-full transition-colors duration-300 ${userReaction === 'like' ? 'bg-red-900/30 text-red-500' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-red-500'}`}
+        >
+          <Heart size={12} className={(userReaction === "like") ? "fill-red-500 text-red-500" : "fill-transparent text-zinc-800 dark:text-zinc-300"} />
+        </motion.button>
+        </div>
       </div>
     </motion.div>
     <PasswordModal 
@@ -1011,19 +1009,19 @@ const AiPromptCard: React.FC<AiPromptCardProps> = ({ prompt, isAdmin, canEdit, o
         </button>
       </div>
 
-      <div className="absolute top-3 left-3 z-20 flex items-center gap-2 bg-black/40 backdrop-blur-md px-2 py-1 rounded-full border border-white/10" onClick={(e) => {
+      <div className="absolute top-3 left-3 z-20 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-lg" onClick={(e) => {
         if(onAuthorClick) { e.stopPropagation(); onAuthorClick(); }
       }}>
         {author?.photoURL ? (
-          <img src={author.photoURL} alt={author.displayName} className="w-5 h-5 rounded-full flex-shrink-0 object-cover" />
+          <img src={author.photoURL} alt={author.displayName} className="w-8 h-8 rounded-full flex-shrink-0 object-cover border border-zinc-600" />
         ) : (
-          <div className="w-5 h-5 rounded-full flex-shrink-0 bg-zinc-700 flex items-center justify-center">
-            <UserIcon size={10} className="text-zinc-400" />
+          <div className="w-8 h-8 rounded-full flex-shrink-0 bg-zinc-700 flex items-center justify-center border border-zinc-600">
+            <UserIcon size={14} className="text-zinc-400" />
           </div>
         )}
-        <div className="flex items-center min-w-0">
-          <span className="text-[10px] font-medium text-zinc-200 hover:underline truncate">{author?.displayName || 'User'}</span>
-          {author?.verified && <BadgeCheck size={10} className="text-blue-500 ml-1 flex-shrink-0" />}
+        <div className="flex items-center min-w-0 mr-1">
+          <span className="text-xs font-bold text-zinc-100 hover:underline truncate">{author?.displayName || 'User'}</span>
+          {author?.verified && <BadgeCheck size={14} className="text-blue-500 ml-1 flex-shrink-0" />}
         </div>
         {author && currentUserId && author.uid !== currentUserId && onFollowToggle && (
           <button
@@ -1031,10 +1029,10 @@ const AiPromptCard: React.FC<AiPromptCardProps> = ({ prompt, isAdmin, canEdit, o
               e.stopPropagation();
               onFollowToggle(author.uid);
             }}
-            className={cn("px-2 py-0.5 ml-1 rounded-full text-[9px] font-bold transition-colors", 
+            className={cn("px-3 py-1 ml-1 rounded-full text-[10px] font-bold transition-colors shadow-sm", 
               author.followers?.includes(currentUserId) 
-              ? "bg-white/20 text-zinc-300" 
-              : "bg-blue-600 text-white hover:bg-blue-700"
+              ? "bg-white/20 text-zinc-100 hover:bg-white/30" 
+              : "bg-blue-600 text-white hover:bg-blue-500"
             )}
           >
             {author.followers?.includes(currentUserId) ? 'Following' : 'Follow'}
@@ -1166,44 +1164,44 @@ const NewsCard: React.FC<NewsCardProps> = ({ news, isAdmin, canEdit, onDelete, o
         <span className="text-green-400 text-xs font-bold mt-2 block">{t('seeMore')}</span>
 
         <div className="mt-3 flex items-center justify-between border-t border-zinc-700/50 pt-2">
-          <div className="flex items-center gap-2 cursor-pointer flex-1 min-w-0" onClick={(e) => {
+          <div className="flex items-center gap-3 cursor-pointer flex-1 min-w-0" onClick={(e) => {
             if(onAuthorClick) { e.stopPropagation(); onAuthorClick(); }
           }}>
             {author?.photoURL ? (
-              <img src={author.photoURL} alt={author.displayName} className="w-5 h-5 rounded-full flex-shrink-0 object-cover" />
+              <img src={author.photoURL} alt={author.displayName} className="w-8 h-8 rounded-full flex-shrink-0 object-cover border border-zinc-700" />
             ) : (
-              <div className="w-5 h-5 rounded-full flex-shrink-0 bg-zinc-700 flex items-center justify-center">
-                <UserIcon size={10} className="text-zinc-400" />
+              <div className="w-8 h-8 rounded-full flex-shrink-0 bg-zinc-700 flex items-center justify-center">
+                <UserIcon size={14} className="text-zinc-400" />
               </div>
             )}
             <div className="flex items-center min-w-0">
-              <span className="text-[10px] font-medium text-zinc-300 hover:underline truncate">{author?.displayName || 'User'}</span>
-              {author?.verified && <BadgeCheck size={10} className="text-blue-500 ml-1 flex-shrink-0" />}
+              <span className="text-xs font-bold text-zinc-200 hover:underline truncate">{author?.displayName || 'User'}</span>
+              {author?.verified && <BadgeCheck size={14} className="text-blue-500 ml-1 flex-shrink-0" />}
             </div>
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-3 flex-shrink-0">
             {author && currentUserId && author.uid !== currentUserId && onFollowToggle && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onFollowToggle(author.uid);
                 }}
-                className={cn("px-2 py-0.5 rounded-full text-[9px] font-bold transition-colors", 
+                className={cn("px-4 py-1.5 rounded-full text-[10px] font-bold transition-colors shadow-sm", 
                   author.followers?.includes(currentUserId) 
-                  ? "bg-black/40 text-zinc-400" 
-                  : "bg-blue-600 text-white hover:bg-blue-700"
+                  ? "bg-zinc-800 text-zinc-300 hover:bg-zinc-700" 
+                  : "bg-blue-600 text-white hover:bg-blue-500"
                 )}
               >
                 {author.followers?.includes(currentUserId) ? 'Following' : 'Follow'}
               </button>
             )}
-            <button
+            <motion.button
+            whileTap={{ scale: 0.8 }}
             onClick={(e) => { e.stopPropagation(); onReact?.('like'); }}
-            className={`flex items-center gap-1 text-[10px] px-2 py-1 rounded-full transition-colors ${userReaction === 'like' ? 'bg-red-900/30 text-red-500' : 'bg-black/40 text-zinc-400 hover:bg-black/60'}`}
+            className={`flex items-center gap-1 text-[10px] px-2 py-1 rounded-full transition-colors duration-300 ${userReaction === 'like' ? 'bg-red-900/30 text-red-500' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-red-500'}`}
           >
-            <span>♥️</span>
-            <span className="font-medium">{reactions?.like || 0}</span>
-          </button>
+            <Heart size={12} className={(userReaction === "like") ? "fill-red-500 text-red-500" : "fill-transparent text-zinc-800 dark:text-zinc-300"} />
+          </motion.button>
           </div>
         </div>
 
@@ -2691,7 +2689,240 @@ const AdminDashboard = ({ t, theme, onUserClick }: { t: (k: string) => string, t
   );
 };
 
+
+interface UserSearchModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  users: UserProfile[];
+  currentUserProfile: UserProfile | null;
+  handleToggleFollowGlobal: (targetUid: string) => Promise<void>;
+  onUserSelect: (uid: string) => void;
+  t: (k: string) => string;
+}
+
+const UserSearchModal: React.FC<UserSearchModalProps> = ({ isOpen, onClose, users, currentUserProfile, handleToggleFollowGlobal, onUserSelect, t }) => {
+  const [query, setQuery] = useState('');
+  
+  useEffect(() => {
+    if (isOpen) {
+      setQuery('');
+    }
+  }, [isOpen]);
+
+  const searchResults = useMemo(() => {
+    if (!query.trim()) return [];
+    return users.filter(u => (u.displayName || "").toLowerCase().includes(query.toLowerCase()) || u.uid === query);
+  }, [query, users]);
+
+  const suggestions = useMemo(() => {
+    if (!currentUserProfile) return [];
+    let pot = users.filter(u => u.uid !== currentUserProfile.uid && !currentUserProfile.following?.includes(u.uid));
+    const today = new Date().toDateString();
+    let seed = 0;
+    for(let i = 0; i < today.length; i++) seed += today.charCodeAt(i);
+    const shuffled = [...pot].sort((a, b) => {
+      const hashA = (a.uid || "a").charCodeAt(0) + seed;
+      const hashB = (b.uid || "b").charCodeAt(0) + seed;
+      return (hashA % 7) - (hashB % 7);
+    });
+    return shuffled.slice(0, 10); // 10 suggestions as requested
+  }, [users, currentUserProfile]);
+
+  if (!isOpen) return null;
+
+  const renderUser = (u: UserProfile, index: number) => {
+    const isCurrentUser = currentUserProfile?.uid === u.uid;
+    const isFollowing = currentUserProfile?.following?.includes(u.uid);
+    const followsMe = currentUserProfile?.followers?.includes(u.uid);
+    
+    let btnText = 'Follow';
+    if (isFollowing && followsMe) btnText = 'Friend';
+    else if (isFollowing) btnText = 'Following';
+    else if (followsMe) btnText = 'Follow back';
+
+    return (
+      <motion.div 
+        key={u.uid} 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, delay: index * 0.03 }}
+        className="flex items-center justify-between p-2 hover:bg-zinc-800/50 rounded-xl transition-colors"
+      >
+        <div className="flex items-center gap-3 cursor-pointer flex-1 min-w-0" onClick={() => onUserSelect(u.uid)}>
+          <img src={u.photoURL || ''} alt={u.displayName} className="w-10 h-10 rounded-full object-cover" />
+          <div className="flex flex-col min-w-0">
+            <span className="font-bold text-sm text-zinc-100 flex items-center gap-1 truncate">
+              {u.displayName}
+              {u.verified && <BadgeCheck size={14} className="text-blue-500 flex-shrink-0" />}
+            </span>
+          </div>
+        </div>
+        {!isCurrentUser && (
+           <button
+             onClick={(e) => { e.stopPropagation(); handleToggleFollowGlobal(u.uid); }}
+             className={`px-4 py-1.5 rounded-full text-[10px] font-bold transition-colors ml-2 ${
+               isFollowing ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-blue-600 text-white hover:bg-blue-700'
+             }`}
+           >
+             {btnText}
+           </button>
+        )}
+      </motion.div>
+    );
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
+      <motion.div 
+        initial={{ opacity: 0, y: 100 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 100 }}
+        className="bg-zinc-900 border border-zinc-800 sm:rounded-2xl rounded-t-2xl w-full max-w-md h-[80vh] sm:h-[70vh] flex flex-col overflow-hidden"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="p-4 border-b border-zinc-800 shrink-0 relative">
+          <button onClick={onClose} className="absolute left-4 top-1/2 -translate-y-1/2 p-2 hover:bg-zinc-800 rounded-full text-zinc-400">
+            <ChevronLeft size={20} />
+          </button>
+          <h2 className="text-center font-bold text-zinc-100">Search Users</h2>
+        </div>
+        
+        <div className="p-4 shrink-0">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
+            <input 
+              type="text"
+              placeholder="Search by username..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="w-full bg-zinc-800 text-zinc-100 pl-10 pr-4 py-3 rounded-xl outline-none border border-zinc-700 focus:border-purple-500 transition-colors"
+            />
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-2">
+          {query.trim() ? (
+            <div className="space-y-1">
+              {searchResults.length > 0 ? searchResults.map((u, i) => renderUser(u, i)) : (
+                <div className="text-center text-zinc-500 py-8">No users found</div>
+              )}
+            </div>
+          ) : (
+            <div>
+              <h3 className="px-3 text-xs font-bold text-zinc-500 uppercase tracking-widest mb-2 mt-2">Suggestions</h3>
+              <div className="space-y-1">
+                {suggestions.map((u, i) => renderUser(u, i))}
+              </div>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+interface NetworkModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  initialTab: 'followers' | 'following' | 'suggestions';
+  displayedProfile: UserProfile | null;
+  currentUserProfile: UserProfile | null;
+  users: UserProfile[];
+  handleToggleFollowGlobal: (targetUid: string) => Promise<void>;
+  t: (k: string) => string;
+}
+
+const NetworkModal: React.FC<NetworkModalProps> = ({ isOpen, onClose, initialTab, displayedProfile, currentUserProfile, users, handleToggleFollowGlobal, t }) => {
+  const [tab, setTab] = useState(initialTab);
+  
+  useEffect(() => {
+    if (isOpen) setTab(initialTab);
+  }, [isOpen, initialTab]);
+
+  const followers = users.filter(u => displayedProfile?.followers?.includes(u.uid));
+  const following = users.filter(u => displayedProfile?.following?.includes(u.uid));
+  
+  const suggestions = useMemo(() => {
+    if (!currentUserProfile) return [];
+    let pot = users.filter(u => u.uid !== currentUserProfile.uid && !currentUserProfile.following?.includes(u.uid));
+    const today = new Date().toDateString();
+    let seed = 0;
+    for(let i = 0; i < today.length; i++) seed += today.charCodeAt(i);
+    const shuffled = [...pot].sort((a, b) => {
+      const hashA = (a.uid || "a").charCodeAt(0) + seed;
+      const hashB = (b.uid || "b").charCodeAt(0) + seed;
+      return (hashA % 7) - (hashB % 7);
+    });
+    return shuffled.slice(0, 50);
+  }, [users, currentUserProfile]);
+
+  if (!isOpen) return null;
+
+  const renderUser = (u: UserProfile) => {
+    const isCurrentUser = currentUserProfile?.uid === u.uid;
+    const isFollowing = currentUserProfile?.following?.includes(u.uid);
+    const followsMe = currentUserProfile?.followers?.includes(u.uid);
+    
+    let btnText = 'Follow';
+    if (isFollowing && followsMe) btnText = 'Friend';
+    else if (isFollowing) btnText = 'Following';
+    else if (followsMe) btnText = 'Follow back';
+
+    return (
+      <div key={u.uid} className="flex items-center justify-between p-2 hover:bg-zinc-800/50 rounded-xl transition-colors">
+        <div className="flex items-center gap-3 cursor-pointer">
+          <img src={u.photoURL} alt={u.displayName} className="w-10 h-10 rounded-full object-cover" />
+          <div className="flex flex-col">
+            <span className="font-bold text-sm text-zinc-100 flex items-center gap-1">
+              {u.displayName}
+              {u.verified && <BadgeCheck size={14} className="text-blue-500" />}
+            </span>
+          </div>
+        </div>
+        {!isCurrentUser && (
+           <button 
+             onClick={() => handleToggleFollowGlobal(u.uid)}
+             className={`px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${
+               isFollowing ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-blue-600 text-white hover:bg-blue-700'
+             }`}
+           >
+             {btnText}
+           </button>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex border-b border-zinc-800 shrink-0">
+          <button onClick={() => setTab('followers')} className={`flex-1 py-3 text-sm font-bold ${tab === 'followers' ? 'text-white border-b-2 border-white' : 'text-zinc-500'}`}>Followers</button>
+          <button onClick={() => setTab('following')} className={`flex-1 py-3 text-sm font-bold ${tab === 'following' ? 'text-white border-b-2 border-white' : 'text-zinc-500'}`}>Following</button>
+          <button onClick={() => setTab('suggestions')} className={`flex-1 py-3 text-sm font-bold ${tab === 'suggestions' ? 'text-white border-b-2 border-white' : 'text-zinc-500'}`}>Suggestions</button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+          {tab === 'followers' && followers.map(renderUser)}
+          {tab === 'following' && following.map(renderUser)}
+          {tab === 'suggestions' && suggestions.map(renderUser)}
+          
+          {tab === 'followers' && followers.length === 0 && <div className="text-center text-zinc-500 py-8">No followers yet</div>}
+          {tab === 'following' && following.length === 0 && <div className="text-center text-zinc-500 py-8">Not following anyone</div>}
+          {tab === 'suggestions' && suggestions.length === 0 && <div className="text-center text-zinc-500 py-8">No suggestions available</div>}
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
 // --- Main App ---
+
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -2714,6 +2945,8 @@ export default function App() {
   const [editingItem, setEditingItem] = useState<any>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ collection: string, id: string } | null>(null);
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
+  const [networkModalOpen, setNetworkModalOpen] = useState(false);
+  const [networkModalTab, setNetworkModalTab] = useState<'followers' | 'following' | 'suggestions'>('followers');
   const [fabOpen, setFabOpen] = useState(false);
   const [editingUsername, setEditingUsername] = useState(false);
   const [newUsername, setNewUsername] = useState('');
@@ -2735,6 +2968,8 @@ export default function App() {
   const [configPassword, setConfigPassword] = useState('');
   const [showConfigPassword, setShowConfigPassword] = useState(false);
   const [adsManagerOpen, setAdsManagerOpen] = useState(false);
+  const [userSearchModalOpen, setUserSearchModalOpen] = useState(false);
+  const [userSearchQuery, setUserSearchQuery] = useState("");
   const isInitialLoad = React.useRef(true);
 
 
@@ -2769,28 +3004,20 @@ export default function App() {
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx?.drawImage(img, 0, 0, width, height);
-          canvas.toBlob(async (blob) => {
-            if (!blob) {
-              setGlobalLoading(false);
-              return;
+          const base64Image = canvas.toDataURL('image/jpeg', 0.8);
+          try {
+            await updateProfile(user, { photoURL: base64Image });
+            const userRef = doc(db, 'users', user.uid);
+            await setDoc(userRef, { photoURL: base64Image }, { merge: true });
+            if (profile) {
+              setProfile({ ...profile, photoURL: base64Image });
             }
-            try {
-              const storageRef = ref(storage, `profileImages/${user.uid}_${Date.now()}.jpg`);
-              await uploadBytes(storageRef, blob);
-              const photoURL = await getDownloadURL(storageRef);
-              await updateProfile(user, { photoURL });
-              const userRef = doc(db, 'users', user.uid);
-              await setDoc(userRef, { photoURL }, { merge: true });
-              if (profile) {
-                setProfile({ ...profile, photoURL });
-              }
-            } catch(err) {
-               console.error('Error saving profile picture:', err);
-               alert('Failed to update profile picture.');
-            } finally {
-              setGlobalLoading(false);
-            }
-          }, 'image/jpeg', 0.8);
+          } catch(err) {
+             console.error('Error saving profile picture:', err);
+             alert('Failed to update profile picture.');
+          } finally {
+            setGlobalLoading(false);
+          }
         };
         img.src = event.target?.result as string;
       };
@@ -2907,7 +3134,7 @@ export default function App() {
           uid: u.uid,
           email: u.email || '',
           displayName: u.displayName || 'User',
-          photoURL: u.photoURL || `https://picsum.photos/seed/${u.uid}/200`,
+          photoURL: `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.uid}`,
           isPremium: true,
           role: isAdminEmail ? 'admin' : 'user'
         });
@@ -2945,7 +3172,7 @@ export default function App() {
               uid: u.uid,
               email: u.email || '',
               displayName: u.displayName || 'User',
-              photoURL: u.photoURL || `https://picsum.photos/seed/${u.uid}/200`,
+              photoURL: `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.uid}`,
               isPremium: true,
               role: isAdminEmail ? 'admin' : 'user',
               lastActiveDate: todayStr,
@@ -2975,6 +3202,18 @@ export default function App() {
     });
     return unsub;
   }, []);
+
+  useEffect(() => {
+    if (!user || !users.length) return;
+    const adminUser = users.find(u => u.email === 'richarddeogtatius18@gmail.com');
+    if (adminUser && user.email !== 'richarddeogtatius18@gmail.com') {
+      const myProfile = users.find(u => u.uid === user.uid);
+      if (myProfile && !myProfile.following?.includes(adminUser.uid)) {
+        updateDoc(doc(db, 'users', user.uid), { following: arrayUnion(adminUser.uid) }).catch(() => {});
+        updateDoc(doc(db, 'users', adminUser.uid), { followers: arrayUnion(user.uid) }).catch(() => {});
+      }
+    }
+  }, [user, users]);
 
   useEffect(() => {
     if (!isAuthReady) return;
@@ -3138,23 +3377,48 @@ export default function App() {
     } catch (e) { console.error("Error following:", e); }
   };
 
-  const handleReact = async (itemId: string, collectionName: string, type: 'like') => {
+    const handleReact = async (itemId: string, collectionName: string, type: 'like') => {
     if (!user) return;
     
     // Find item across all collections
     let item;
-    if (collectionName === 'home_posts') item = posts.find(p => p.id === itemId);
-    else if (collectionName === 'premium_apk') item = premiumApps.find(p => p.id === itemId);
-    else if (collectionName === 'cyber_news') item = news.find(p => p.id === itemId);
-    else if (collectionName === 'ai_prompts') item = aiPrompts.find(p => p.id === itemId);
+    let setItemState;
+    if (collectionName === 'home_posts') { item = posts.find(p => p.id === itemId); setItemState = setPosts; }
+    else if (collectionName === 'premium_apk') { item = premiumApps.find(p => p.id === itemId); setItemState = setPremiumApps; }
+    else if (collectionName === 'cyber_news') { item = news.find(p => p.id === itemId); setItemState = setNews; }
+    else if (collectionName === 'ai_prompts') { item = aiPrompts.find(p => p.id === itemId); setItemState = setAiPrompts; }
     
-    if (!item) return;
+    if (!item || !setItemState) return;
 
     const currentReaction = item.userReactions?.[user.uid];
+    const isRemoving = currentReaction === type;
+    
+    // Optimistic UI Update
+    setItemState((prev: any[]) => prev.map(p => {
+      if (p.id === itemId) {
+        const currentReactionsCount = p.reactions?.[type] || 0;
+        const newReactionsCount = isRemoving ? Math.max(0, currentReactionsCount - 1) : currentReactionsCount + 1;
+        const newUserReactions = { ...p.userReactions };
+        
+        if (isRemoving) {
+          delete newUserReactions[user.uid];
+        } else {
+          newUserReactions[user.uid] = type;
+        }
+
+        return {
+          ...p,
+          reactions: { ...p.reactions, [type]: newReactionsCount },
+          userReactions: newUserReactions
+        };
+      }
+      return p;
+    }));
+
     const itemRef = doc(db, collectionName, itemId);
 
     try {
-      if (currentReaction === type) {
+      if (isRemoving) {
         // Remove reaction
         await updateDoc(itemRef, {
           [`reactions.${type}`]: Math.max(0, (item.reactions?.[type] || 0) - 1),
@@ -3172,6 +3436,11 @@ export default function App() {
         await updateDoc(itemRef, updates);
       }
     } catch (error) {
+      // Revert optimistic update
+      setItemState((prev: any[]) => prev.map(p => {
+        if (p.id === itemId) return item;
+        return p;
+      }));
       handleFirestoreError(error, OperationType.UPDATE, `${collectionName}/${itemId}`);
     }
   };
@@ -3443,12 +3712,20 @@ export default function App() {
       <AdDisplay />
       {/* Header */}
       {activeTab !== 'profile' && (
-      <header className="sticky top-0 z-40 bg-inherit/80 backdrop-blur-md px-6 py-4 flex justify-between items-center max-w-md mx-auto">
-        <div>
-          <h1 className="text-xl font-black italic tracking-tighter text-white">CYBER HACKS</h1>
-          <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">{t('welcome')}, {profile?.displayName.split(' ')[0]}</p>
+      <header className="sticky top-0 z-40 bg-inherit/80 backdrop-blur-md px-6 py-4 flex items-center justify-between max-w-md mx-auto gap-3">
+        <div className="flex-1 min-w-0">
+          <h1 className="text-xl font-black italic tracking-tighter text-white truncate">CYBER HACKS</h1>
+          <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest truncate">{t('welcome')}, {profile?.displayName.split(' ')[0]}</p>
         </div>
-        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-purple-500 shadow-lg shadow-purple-500/20">
+        
+        <button 
+          onClick={() => setUserSearchModalOpen(true)}
+          className="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white transition-colors shrink-0 shadow-lg border border-zinc-700"
+        >
+          <Search size={18} />
+        </button>
+
+        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-purple-500 shadow-lg shadow-purple-500/20 shrink-0 cursor-pointer" onClick={() => setActiveTab('profile')}>
           {profile?.photoURL ? (
             <img src={profile.photoURL} alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
           ) : (
@@ -3733,16 +4010,7 @@ export default function App() {
                 
                 const totalPostsCount = userPosts.length + userApps.length + userNews.length + userPrompts.length;
                 const totalLikes = userPosts.reduce((acc, post) => {
-                  let fakeLikes = 0;
-                  if (!isAdmin && post.createdAt) {
-                    const now = Date.now();
-                    const createdTime = post.createdAt?.toMillis ? post.createdAt.toMillis() : new Date(post.createdAt).getTime();
-                    if (!isNaN(createdTime)) {
-                      const hoursElapsed = (now - createdTime) / (1000 * 60 * 60);
-                      fakeLikes = Math.floor(hoursElapsed * 1.5) + 5;
-                    }
-                  }
-                  return acc + (post.reactions?.like || 0) + fakeLikes;
+                  return acc + (post.reactions?.like || 0);
                 }, 0);
                 const followersCount = (isAdmin && isOwnProfile) ? users.length : (displayedProfile?.followers?.length || 0);
                 const isFollowing = user && displayedProfile?.followers?.includes(user.uid);
@@ -3794,18 +4062,21 @@ export default function App() {
                         )}
                       </div>
                         
-                      <div className="flex gap-6">
+                      <div className="flex gap-6 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => {
+                          setNetworkModalTab('followers');
+                          setNetworkModalOpen(true);
+                        }}>
                         <div className="flex flex-col items-center">
                           <span className="font-black text-xl text-zinc-100">{userPosts.length}</span>
                           <span className="text-xs text-zinc-500 font-medium">Posts</span>
                         </div>
                         <div className="flex flex-col items-center">
-                          <span className="font-black text-xl text-zinc-100">{followersCount}</span>
+                          <span className="font-black text-xl text-zinc-100">{Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(followersCount)}</span>
                           <span className="text-xs text-zinc-500 font-medium">Followers</span>
                         </div>
                         
                         <div className="flex flex-col items-center">
-                          <span className="font-black text-xl text-zinc-100">{totalLikes}</span>
+                          <span className="font-black text-xl text-zinc-100">{Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(totalLikes)}</span>
                           <span className="text-xs text-zinc-500 font-medium">Likes</span>
                         </div>
                       </div>
@@ -4470,6 +4741,37 @@ export default function App() {
       <AnimatePresence>
         {adsManagerOpen && (
           <AdminAdsManager t={t} onBack={() => setAdsManagerOpen(false)} />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {networkModalOpen && (
+          <NetworkModal
+            isOpen={networkModalOpen}
+            onClose={() => setNetworkModalOpen(false)}
+            initialTab={networkModalTab}
+            displayedProfile={activeTab === "profile" ? (viewingProfileId ? users.find(u => u.uid === viewingProfileId) : profile) || null : null}
+            currentUserProfile={profile}
+            users={users}
+            handleToggleFollowGlobal={handleToggleFollowGlobal}
+            t={t}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {userSearchModalOpen && (
+          <UserSearchModal
+            isOpen={userSearchModalOpen}
+            onClose={() => setUserSearchModalOpen(false)}
+            users={users}
+            currentUserProfile={profile}
+            handleToggleFollowGlobal={handleToggleFollowGlobal}
+            onUserSelect={(uid) => {
+              setViewingProfileId(uid);
+              setActiveTab('profile');
+              setUserSearchModalOpen(false);
+            }}
+            t={t}
+          />
         )}
       </AnimatePresence>
     </div>
