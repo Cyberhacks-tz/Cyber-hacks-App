@@ -33,7 +33,7 @@ import {
   arrayUnion,
   arrayRemove
 } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, uploadString, getDownloadURL } from 'firebase/storage';
 import { 
   Home, 
   Shield, 
@@ -83,6 +83,18 @@ import { cn } from './lib/utils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
+
+const VerifiedBadge = ({ type, size = 14, className = "" }: { type?: '1' | '2', size?: number, className?: string }) => {
+  if (type === '1') {
+    return (
+       <div className={`flex items-center justify-center bg-blue-500 rounded-full flex-shrink-0 ${className}`} style={{ width: size, height: size }}>
+         <Check size={size * 0.7} className="text-white" strokeWidth={4} />
+       </div>
+    );
+  }
+  return <BadgeCheck size={size} className={`text-blue-500 flex-shrink-0 ${className}`} />;
+};
+
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
@@ -433,10 +445,7 @@ const PasswordModal = ({ isOpen, onClose, onSuccess, expectedPassword, requestMe
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
       <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={onClose} />
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.9 }}
+      <div
         className="relative w-full max-w-xs bg-zinc-900 border border-zinc-800 rounded-3xl p-6 text-center shadow-2xl"
       >
         <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-purple-600/20 text-green-400 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -475,7 +484,7 @@ const PasswordModal = ({ isOpen, onClose, onSuccess, expectedPassword, requestMe
             {t('getPassword')}
           </button>
         </form>
-      </motion.div>
+      </div>
     </div>
   );
 };
@@ -515,8 +524,7 @@ const Navbar = ({ activeTab, setActiveTab, t, theme }: { activeTab: string, setA
             )}
             <span className="text-[10px] font-bold uppercase tracking-wider">{tab.id === 'chat' ? 'PROMPT' : tab.label}</span>
             {activeTab === tab.id && (
-              <motion.div
-                layoutId="nav-indicator"
+              <div
                 className={cn("absolute -top-4 w-1.5 h-1.5 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.8)]", theme === 'dark' ? "bg-green-400" : "bg-green-600")}
               />
             )}
@@ -588,20 +596,12 @@ const Card: React.FC<CardProps> = ({ title, image, link, onClick, isAdmin, canEd
 
   return (
     <>
-    <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+    <div
       className="bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-xl group cursor-pointer relative flex flex-col transition-colors"
     >
       {isOpening && (
         <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center gap-3">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          <div
             className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full"
           />
           <span className="text-[10px] font-bold text-green-400 uppercase tracking-widest animate-pulse">Connecting...</span>
@@ -684,15 +684,14 @@ const Card: React.FC<CardProps> = ({ title, image, link, onClick, isAdmin, canEd
         <div className="flex flex-col items-start min-w-0">
           <div className="flex items-center">
             <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:underline truncate">{author?.displayName || 'User'}</span>
-            {author?.verified && <BadgeCheck size={12} className="text-blue-500 ml-1 flex-shrink-0" />}
+            {author?.verified && <VerifiedBadge type={author?.verifiedType} size={12} className="ml-1" />}
           </div>
         </div>
       </div>
       
       <div className="flex items-center gap-2 flex-shrink-0">
         
-        <motion.button
-        whileTap={{ scale: 0.8 }}
+        <button
         onClick={(e) => {
           e.stopPropagation();
           onReact?.('like');
@@ -703,10 +702,10 @@ const Card: React.FC<CardProps> = ({ title, image, link, onClick, isAdmin, canEd
         )}
       >
         <Heart size={12} className={(userReaction === "like") ? "fill-red-500 text-red-500" : "fill-transparent text-zinc-800 dark:text-zinc-300"} />
-      </motion.button>
+      </button>
       </div>
     </div>
-  </motion.div>
+  </div>
   <PasswordModal 
     isOpen={showPasswordPrompt}
     onClose={() => setShowPasswordPrompt(false)}
@@ -758,26 +757,18 @@ const PremiumCard: React.FC<PremiumCardProps> = ({ app, onDownload, isAdmin, can
 
   return (
     <>
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
+    <div
             className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800 flex flex-col gap-4 shadow-lg relative overflow-hidden"
     >
       {isDownloading && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+        <div
           className="absolute inset-0 z-20 bg-black/40 backdrop-blur-[1px] flex items-center justify-center"
         >
-          <motion.div
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 1, repeat: Infinity }}
+          <div
           >
             <Download size={24} className="text-green-400" />
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
       <div className="flex gap-4 items-center">
         <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-zinc-800">
@@ -857,7 +848,7 @@ const PremiumCard: React.FC<PremiumCardProps> = ({ app, onDownload, isAdmin, can
           )}
           <div className="flex items-center min-w-0">
             <span className="text-xs font-bold text-zinc-200 hover:underline truncate">{author?.displayName || 'User'}</span>
-            {author?.verified && <BadgeCheck size={14} className="text-blue-500 ml-1 flex-shrink-0" />}
+            {author?.verified && <VerifiedBadge type={author?.verifiedType} size={14} className="ml-1" />}
           </div>
         </div>
         <div className="flex items-center gap-3 flex-shrink-0">
@@ -876,16 +867,15 @@ const PremiumCard: React.FC<PremiumCardProps> = ({ app, onDownload, isAdmin, can
               {author.followers?.includes(currentUserId) ? 'Following' : 'Follow'}
             </button>
           )}
-          <motion.button
-          whileTap={{ scale: 0.8 }}
+          <button
           onClick={(e) => { e.stopPropagation(); onReact?.('like'); }}
           className={`flex items-center gap-1 text-[10px] px-2 py-1 rounded-full transition-colors duration-300 ${userReaction === 'like' ? 'bg-red-900/30 text-red-500' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-red-500'}`}
         >
           <Heart size={12} className={(userReaction === "like") ? "fill-red-500 text-red-500" : "fill-transparent text-zinc-800 dark:text-zinc-300"} />
-        </motion.button>
+        </button>
         </div>
       </div>
-    </motion.div>
+    </div>
     <PasswordModal 
       isOpen={showPasswordPrompt}
       onClose={() => setShowPasswordPrompt(false)}
@@ -940,13 +930,7 @@ const AiPromptCard: React.FC<AiPromptCardProps> = ({ prompt, isAdmin, canEdit, o
 
   return (
     <>
-    <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
-      whileHover={{ scale: 1.02, y: -5 }}
-      whileTap={{ scale: 0.98 }}
+    <div
       className="relative rounded-[2.5rem] overflow-hidden w-full aspect-[4/5] sm:h-[420px] sm:aspect-auto group cursor-pointer shadow-xl border-2 border-white/5 dark:border-white/10"
       onClick={() => handleAction('view')}
     >
@@ -1021,7 +1005,7 @@ const AiPromptCard: React.FC<AiPromptCardProps> = ({ prompt, isAdmin, canEdit, o
         )}
         <div className="flex items-center min-w-0 mr-1">
           <span className="text-xs font-bold text-zinc-100 hover:underline truncate">{author?.displayName || 'User'}</span>
-          {author?.verified && <BadgeCheck size={14} className="text-blue-500 ml-1 flex-shrink-0" />}
+          {author?.verified && <VerifiedBadge type={author?.verifiedType} size={14} className="ml-1" />}
         </div>
         {author && currentUserId && author.uid !== currentUserId && onFollowToggle && (
           <button
@@ -1056,7 +1040,7 @@ const AiPromptCard: React.FC<AiPromptCardProps> = ({ prompt, isAdmin, canEdit, o
           </button>
         </div>
       )}
-    </motion.div>
+    </div>
     <PasswordModal 
       isOpen={showPasswordPrompt}
       onClose={() => setShowPasswordPrompt(false)}
@@ -1104,13 +1088,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ news, isAdmin, canEdit, onDelete, o
 
   return (
     <>
-    <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+    <div
       className="relative rounded-3xl overflow-hidden aspect-[3/4] group cursor-pointer shadow-xl border border-zinc-800"
       onClick={handleOpen}
     >
@@ -1176,7 +1154,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ news, isAdmin, canEdit, onDelete, o
             )}
             <div className="flex items-center min-w-0">
               <span className="text-xs font-bold text-zinc-200 hover:underline truncate">{author?.displayName || 'User'}</span>
-              {author?.verified && <BadgeCheck size={14} className="text-blue-500 ml-1 flex-shrink-0" />}
+              {author?.verified && <VerifiedBadge type={author?.verifiedType} size={14} className="ml-1" />}
             </div>
           </div>
           <div className="flex items-center gap-3 flex-shrink-0">
@@ -1195,18 +1173,17 @@ const NewsCard: React.FC<NewsCardProps> = ({ news, isAdmin, canEdit, onDelete, o
                 {author.followers?.includes(currentUserId) ? 'Following' : 'Follow'}
               </button>
             )}
-            <motion.button
-            whileTap={{ scale: 0.8 }}
+            <button
             onClick={(e) => { e.stopPropagation(); onReact?.('like'); }}
             className={`flex items-center gap-1 text-[10px] px-2 py-1 rounded-full transition-colors duration-300 ${userReaction === 'like' ? 'bg-red-900/30 text-red-500' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-red-500'}`}
           >
             <Heart size={12} className={(userReaction === "like") ? "fill-red-500 text-red-500" : "fill-transparent text-zinc-800 dark:text-zinc-300"} />
-          </motion.button>
+          </button>
           </div>
         </div>
 
       </div>
-    </motion.div>
+    </div>
     <PasswordModal 
       isOpen={showPasswordPrompt}
       onClose={() => setShowPasswordPrompt(false)}
@@ -1308,18 +1285,11 @@ const NewsDetailModal = ({ news, onClose, t }: { news: CyberNews | null, onClose
   if (!news || !translatedNews) return null;
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-6">
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+      <div
         onClick={onClose}
         className="absolute inset-0 bg-black/90 backdrop-blur-sm"
       />
-      <motion.div 
-        initial={{ opacity: 0, y: "100%" }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: "100%" }}
-        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+      <div
         className="relative w-full max-w-2xl bg-black text-zinc-100 sm:rounded-3xl rounded-t-3xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
       >
         {translatedNews.image ? (
@@ -1362,7 +1332,7 @@ const NewsDetailModal = ({ news, onClose, t }: { news: CyberNews | null, onClose
             <h2 className="text-2xl sm:text-3xl font-black text-white mb-6 leading-tight">{translatedNews.title}</h2>
             <MarkdownRenderer content={translatedNews.content} />
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
@@ -1382,17 +1352,11 @@ const AiPromptDetailModal = ({ prompt, onClose }: { prompt: AiPrompt | null, onC
   if (showText) {
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 pb-20 sm:pb-6">
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+        <div
           onClick={() => setShowText(false)}
           className="absolute inset-0 bg-black/90 backdrop-blur-sm"
         />
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        <div
           className="relative w-full max-w-2xl h-[85vh] flex flex-col rounded-3xl overflow-hidden shadow-2xl border border-white/10"
         >
           <div className="absolute inset-0 z-0">
@@ -1423,17 +1387,14 @@ const AiPromptDetailModal = ({ prompt, onClose }: { prompt: AiPrompt | null, onC
                {copied ? 'Copied!' : 'Copy Prompt'}
             </button>
           </div>
-        </motion.div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/95 backdrop-blur-2xl">
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+      <div
         className="absolute inset-0"
         onClick={onClose}
       />
@@ -1444,11 +1405,7 @@ const AiPromptDetailModal = ({ prompt, onClose }: { prompt: AiPrompt | null, onC
         <X size={24} />
       </button>
 
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.9, y: 30 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+      <div
         className="relative w-full max-w-4xl max-h-[85vh] flex flex-col items-center justify-center pointer-events-none"
       >
         <div className="w-full pb-[100px] pointer-events-auto">
@@ -1465,12 +1422,9 @@ const AiPromptDetailModal = ({ prompt, onClose }: { prompt: AiPrompt | null, onC
             </div>
           )}
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
+      <div
         className="absolute bottom-6 sm:bottom-12 left-0 right-0 flex justify-center gap-3 sm:gap-6 px-4 z-50 pointer-events-auto"
       >
         <button 
@@ -1488,7 +1442,7 @@ const AiPromptDetailModal = ({ prompt, onClose }: { prompt: AiPrompt | null, onC
           {copied ? <Check size={20} className="text-green-600" /> : <Copy size={20} />}
           {copied ? 'Copied' : <><span className="hidden sm:inline">Copy Prompt</span><span className="sm:hidden">Copy</span></>}
         </button>
-      </motion.div>
+      </div>
     </div>
   );
 };
@@ -1563,16 +1517,11 @@ const AddModal = ({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+      <div
         onClick={onClose}
         className="absolute inset-0 bg-black/80 backdrop-blur-sm"
       />
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
+      <div
         className="relative w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-3xl p-6 shadow-2xl max-h-[90vh] overflow-y-auto"
       >
         <h2 className="text-xl font-bold mb-6 text-green-400">
@@ -1952,9 +1901,7 @@ const AddModal = ({
           >
             {isSubmitting ? (
               <>
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                <div
                   className="w-5 h-5 border-2 border-black border-t-transparent rounded-full"
                 />
                 Processing...
@@ -1964,7 +1911,7 @@ const AddModal = ({
             )}
           </button>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
@@ -2167,17 +2114,11 @@ const AdminAdsManager = ({ t, onBack }: { t: (k: string) => string; onBack: () =
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6">
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+      <div
         onClick={onBack}
         className="absolute inset-0 bg-black/80 backdrop-blur-sm"
       />
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+      <div
         className="relative w-full max-w-xl bg-zinc-900 rounded-3xl p-6 border border-zinc-800 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col"
       >
         <button onClick={onBack} className="absolute top-4 right-4 p-2 bg-zinc-800 hover:bg-zinc-700 rounded-full text-white transition-colors z-[210]">
@@ -2428,7 +2369,7 @@ const AdminAdsManager = ({ t, onBack }: { t: (k: string) => string; onBack: () =
              </div>
           )}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
@@ -2539,10 +2480,7 @@ const AdDisplay = () => {
           }}
         />
       )}
-      <motion.div 
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
+      <div
         className={cn(
           "relative w-[95vw] md:w-[85vw] max-w-3xl h-[85vh] bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col",
           currentAd.adLinkUrl ? "cursor-pointer" : ""
@@ -2559,11 +2497,10 @@ const AdDisplay = () => {
         </button>
         
         <div className="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
-          <AnimatePresence mode="wait">
-            <motion.div 
+          
+            <div 
               key={mUrl}
               {...getAnimClass()}
-              transition={{ duration: 0.5, type: currentAd.transitionType === 'bounce' ? 'spring' : 'tween' }}
               className="absolute inset-0 flex items-center justify-center"
             >
               {currentAd.mediaType === 'video' ? (
@@ -2571,8 +2508,8 @@ const AdDisplay = () => {
               ) : (
                 <img src={mUrl} alt="Ad content" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               )}
-            </motion.div>
-          </AnimatePresence>
+            </div>
+          
         </div>
 
         <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 flex items-center gap-2 z-10">
@@ -2587,7 +2524,7 @@ const AdDisplay = () => {
             ))}
           </div>
         )}
-      </motion.div>
+      </div>
     </div>
   );
 };
@@ -2595,6 +2532,7 @@ const AdDisplay = () => {
 const AdminDashboard = ({ t, theme, onUserClick }: { t: (k: string) => string, theme: string, onUserClick: (u: UserProfile) => void }) => {
   const [usersList, setUsersList] = useState<UserProfile[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'users'), (snapshot) => {
@@ -2610,6 +2548,14 @@ const AdminDashboard = ({ t, theme, onUserClick }: { t: (k: string) => string, t
 
   const todayStr = new Date().toISOString().split('T')[0];
   const todayLogins = usersList.filter(u => u.lastActiveDate === todayStr);
+
+  const filteredUsers = useMemo(() => {
+    if (!searchQuery.trim()) return usersList;
+    return usersList.filter(u => 
+      (u.displayName || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
+      (u.email || '').toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery, usersList]);
 
   return (
     <div className="space-y-6 pb-20">
@@ -2671,7 +2617,7 @@ const AdminDashboard = ({ t, theme, onUserClick }: { t: (k: string) => string, t
                  <div className="flex-1">
                    <button onClick={() => onUserClick(u)} className={cn("text-sm font-medium hover:text-purple-400 text-left flex items-center gap-1 transition-colors", theme === 'dark' ? "text-white" : "text-zinc-100")}>
                      {u.displayName}
-                     {u.verified && <BadgeCheck size={14} className="text-blue-500" />}
+                     {u.verified && <VerifiedBadge type={u.verifiedType} size={14} />}
                    </button>
                    <p className="text-zinc-500 text-xs">{u.email}</p>
                  </div>
@@ -2741,11 +2687,8 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({ isOpen, onClose, user
     else if (followsMe) btnText = 'Follow back';
 
     return (
-      <motion.div 
-        key={u.uid} 
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2, delay: index * 0.03 }}
+      <div 
+        key={u.uid}
         className="flex items-center justify-between p-2 hover:bg-zinc-800/50 rounded-xl transition-colors"
       >
         <div className="flex items-center gap-3 cursor-pointer flex-1 min-w-0" onClick={() => onUserSelect(u.uid)}>
@@ -2753,7 +2696,7 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({ isOpen, onClose, user
           <div className="flex flex-col min-w-0">
             <span className="font-bold text-sm text-zinc-100 flex items-center gap-1 truncate">
               {u.displayName}
-              {u.verified && <BadgeCheck size={14} className="text-blue-500 flex-shrink-0" />}
+              {u.verified && <VerifiedBadge type={u.verifiedType} size={14} />}
             </span>
           </div>
         </div>
@@ -2767,16 +2710,13 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({ isOpen, onClose, user
              {btnText}
            </button>
         )}
-      </motion.div>
+      </div>
     );
   };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <motion.div 
-        initial={{ opacity: 0, y: 100 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 100 }}
+      <div
         className="bg-zinc-900 border border-zinc-800 sm:rounded-2xl rounded-t-2xl w-full max-w-md h-[80vh] sm:h-[70vh] flex flex-col overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
@@ -2816,7 +2756,7 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({ isOpen, onClose, user
             </div>
           )}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
@@ -2869,20 +2809,20 @@ const NetworkModal: React.FC<NetworkModalProps> = ({ isOpen, onClose, initialTab
     else if (followsMe) btnText = 'Follow back';
 
     return (
-      <div key={u.uid} className="flex items-center justify-between p-2 hover:bg-zinc-800/50 rounded-xl transition-colors">
+      <div key={u.uid} className="flex items-center justify-between p-3 hover:bg-zinc-800/50 rounded-xl transition-colors bg-zinc-900/40 mb-2 border border-zinc-800/50">
         <div className="flex items-center gap-3 cursor-pointer">
-          <img src={u.photoURL} alt={u.displayName} className="w-10 h-10 rounded-full object-cover" />
+          <img src={u.photoURL || ''} alt={u.displayName} className="w-12 h-12 rounded-full object-cover border border-zinc-700" />
           <div className="flex flex-col">
-            <span className="font-bold text-sm text-zinc-100 flex items-center gap-1">
+            <span className="font-bold text-zinc-100 flex items-center gap-1">
               {u.displayName}
-              {u.verified && <BadgeCheck size={14} className="text-blue-500" />}
+              {u.verified && <VerifiedBadge type={u.verifiedType} size={14} />}
             </span>
           </div>
         </div>
         {!isCurrentUser && (
            <button 
              onClick={() => handleToggleFollowGlobal(u.uid)}
-             className={`px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${
+             className={`px-5 py-1.5 rounded-full text-xs font-bold transition-colors ${
                isFollowing ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-blue-600 text-white hover:bg-blue-700'
              }`}
            >
@@ -2894,29 +2834,37 @@ const NetworkModal: React.FC<NetworkModalProps> = ({ isOpen, onClose, initialTab
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden"
-        onClick={e => e.stopPropagation()}
-      >
-        <div className="flex border-b border-zinc-800 shrink-0">
-          <button onClick={() => setTab('followers')} className={`flex-1 py-3 text-sm font-bold ${tab === 'followers' ? 'text-white border-b-2 border-white' : 'text-zinc-500'}`}>Followers</button>
-          <button onClick={() => setTab('following')} className={`flex-1 py-3 text-sm font-bold ${tab === 'following' ? 'text-white border-b-2 border-white' : 'text-zinc-500'}`}>Following</button>
-          <button onClick={() => setTab('suggestions')} className={`flex-1 py-3 text-sm font-bold ${tab === 'suggestions' ? 'text-white border-b-2 border-white' : 'text-zinc-500'}`}>Suggestions</button>
+    <div className="fixed inset-0 z-[100] flex flex-col bg-black">
+      {/* Header */}
+      <div className="flex items-center p-4 border-b border-zinc-800 bg-zinc-950">
+        <button onClick={onClose} className="mr-4 p-2 -ml-2 rounded-full hover:bg-zinc-800 transition-colors">
+          <ChevronLeft size={24} className="text-white" />
+        </button>
+        <div className="flex flex-col">
+           <span className="font-bold text-lg text-white leading-tight">{displayedProfile?.displayName || 'Network'}</span>
+           <span className="text-xs text-zinc-500">{displayedProfile?.email}</span>
         </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+      </div>
+
+      {/* Tabs */}
+      <div className="flex border-b border-zinc-800 shrink-0 bg-zinc-950">
+        <button onClick={() => setTab('followers')} className={`flex-1 py-4 text-xs font-bold uppercase tracking-wider transition-colors ${tab === 'followers' ? 'text-white border-b-2 border-white' : 'text-zinc-500 hover:text-zinc-300'}`}>Followers</button>
+        <button onClick={() => setTab('following')} className={`flex-1 py-4 text-xs font-bold uppercase tracking-wider transition-colors ${tab === 'following' ? 'text-white border-b-2 border-white' : 'text-zinc-500 hover:text-zinc-300'}`}>Following</button>
+        <button onClick={() => setTab('suggestions')} className={`flex-1 py-4 text-xs font-bold uppercase tracking-wider transition-colors ${tab === 'suggestions' ? 'text-white border-b-2 border-white' : 'text-zinc-500 hover:text-zinc-300'}`}>Suggestions</button>
+      </div>
+      
+      {/* List */}
+      <div className="flex-1 overflow-y-auto p-4 bg-black">
+        <div className="max-w-xl mx-auto">
           {tab === 'followers' && followers.map(renderUser)}
           {tab === 'following' && following.map(renderUser)}
           {tab === 'suggestions' && suggestions.map(renderUser)}
           
-          {tab === 'followers' && followers.length === 0 && <div className="text-center text-zinc-500 py-8">No followers yet</div>}
-          {tab === 'following' && following.length === 0 && <div className="text-center text-zinc-500 py-8">Not following anyone</div>}
-          {tab === 'suggestions' && suggestions.length === 0 && <div className="text-center text-zinc-500 py-8">No suggestions available</div>}
+          {tab === 'followers' && followers.length === 0 && <div className="text-center text-zinc-500 py-12 font-medium">No followers yet</div>}
+          {tab === 'following' && following.length === 0 && <div className="text-center text-zinc-500 py-12 font-medium">Not following anyone</div>}
+          {tab === 'suggestions' && suggestions.length === 0 && <div className="text-center text-zinc-500 py-12 font-medium">No suggestions available</div>}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
@@ -2925,6 +2873,12 @@ const NetworkModal: React.FC<NetworkModalProps> = ({ isOpen, onClose, initialTab
 
 
 export default function App() {
+    const getAuthor = (item: any) => {
+    if (item.authorId) {
+      return users.find(u => u.uid === item.authorId);
+    }
+    return users.find(u => u.email === 'richarddeogtatius18@gmail.com');
+  };
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [activeTab, setActiveTab] = useState('home');
@@ -2984,33 +2938,25 @@ export default function App() {
         const img = new Image();
         img.onload = async () => {
           const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 300;
-          const MAX_HEIGHT = 300;
-          let width = img.width;
-          let height = img.height;
+          const size = Math.min(img.width, img.height);
+          const startX = (img.width - size) / 2;
+          const startY = (img.height - size) / 2;
           
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
-              height = MAX_HEIGHT;
-            }
-          }
-          canvas.width = width;
-          canvas.height = height;
+          canvas.width = 300;
+          canvas.height = 300;
           const ctx = canvas.getContext('2d');
-          ctx?.drawImage(img, 0, 0, width, height);
+          ctx?.drawImage(img, startX, startY, size, size, 0, 0, 300, 300);
           const base64Image = canvas.toDataURL('image/jpeg', 0.8);
           try {
-            await updateProfile(user, { photoURL: base64Image });
+            const storageRef = ref(storage, `avatars/${user.uid}_${Date.now()}.jpg`);
+            await uploadString(storageRef, base64Image, 'data_url');
+            const downloadURL = await getDownloadURL(storageRef);
+            
+            await updateProfile(user, { photoURL: downloadURL });
             const userRef = doc(db, 'users', user.uid);
-            await setDoc(userRef, { photoURL: base64Image }, { merge: true });
+            await setDoc(userRef, { photoURL: downloadURL }, { merge: true });
             if (profile) {
-              setProfile({ ...profile, photoURL: base64Image });
+              setProfile({ ...profile, photoURL: downloadURL });
             }
           } catch(err) {
              console.error('Error saving profile picture:', err);
@@ -3366,6 +3312,34 @@ export default function App() {
     const isFollowing = targetUser.followers?.includes(user.uid);
     const targetUserRef = doc(db, 'users', targetUid);
     const currentUserRef = doc(db, 'users', user.uid);
+    
+    setUsers(prev => prev.map(u => {
+      if (u.uid === targetUid) {
+        return {
+          ...u,
+          followers: isFollowing 
+            ? (u.followers || []).filter(id => id !== user.uid)
+            : [...(u.followers || []), user.uid]
+        };
+      }
+      if (u.uid === user.uid) {
+         return {
+           ...u,
+           following: isFollowing
+             ? (u.following || []).filter(id => id !== targetUid)
+             : [...(u.following || []), targetUid]
+         }
+      }
+      return u;
+    }));
+    
+    setProfile(prev => prev ? {
+      ...prev,
+      following: isFollowing
+        ? (prev.following || []).filter(id => id !== targetUid)
+        : [...(prev.following || []), targetUid]
+    } : null);
+
     try {
       if (isFollowing) {
         await updateDoc(targetUserRef, { followers: arrayRemove(user.uid) });
@@ -3468,21 +3442,15 @@ export default function App() {
       )}>
         <div className="relative flex flex-col items-center">
           <div className="relative mb-8">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+            <div
               className="absolute -inset-4 rounded-[40px] border border-purple-500/20"
               style={{ borderTopColor: 'transparent', borderBottomColor: 'transparent' }}
             />
-            <motion.div
-              animate={{ rotate: -360 }}
-              transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
+            <div
               className="absolute -inset-8 rounded-[48px] border border-purple-500/10"
               style={{ borderLeftColor: 'transparent', borderRightColor: 'transparent' }}
             />
-            <motion.div
-              animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.6, 0.3] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+            <div
               className="absolute inset-0 bg-gradient-to-r from-green-600 to-purple-600 blur-3xl opacity-30 rounded-full"
             />
             <div className={cn(
@@ -3490,15 +3458,11 @@ export default function App() {
               theme === 'dark' ? "bg-black border-zinc-800 shadow-purple-500/20" : "bg-black border-zinc-800 shadow-purple-500/20"
             )}>
               <div className="absolute inset-0 bg-gradient-to-tr from-green-500/10 via-black to-purple-500/10" />
-              <motion.div
-                animate={{ rotateY: 360 }}
-                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              <div
               >
                 <span className="text-4xl drop-shadow-[0_0_15px_rgba(34,197,94,0.5)]">🏆</span>
-              </motion.div>
-              <motion.div
-                animate={{ y: ['100%', '-100%'] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              </div>
+              <div
                 className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-500/20 to-transparent h-1/2 w-full"
               />
             </div>
@@ -3510,15 +3474,13 @@ export default function App() {
           </h2>
           
           <div className="flex items-center gap-2">
-            <motion.div
-              animate={{ opacity: [0.4, 1, 0.4] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+            <div
               className={cn(
                 "text-[10px] font-bold tracking-[0.3em] uppercase text-zinc-400"
               )}
             >
               {lang === 'sw' ? 'Inapakia Data...' : 'Loading Data...'}
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>
@@ -3543,10 +3505,7 @@ export default function App() {
         theme === 'dark' ? "bg-black text-white" : "bg-black text-zinc-100"
       )}>
         <div className="relative z-10 w-full max-w-sm">
-          <motion.div
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+          <div
             className="mb-8 flex flex-col items-center"
           >
             <div className={cn(
@@ -3561,12 +3520,9 @@ export default function App() {
             <p className="text-sm text-zinc-500">
               {lang === 'sw' ? 'Ingia ili kuendelea' : 'Sign in to continue'}
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ y: 20, opacity: 0, scale: 0.95 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.1, type: "spring", stiffness: 200, damping: 20 }}
+          <div
             className={cn(
               "p-6 sm:p-8 rounded-3xl shadow-sm border text-left",
               theme === 'dark' ? "bg-zinc-900/50 border-zinc-800" : "bg-white border-zinc-200"
@@ -3639,8 +3595,7 @@ export default function App() {
                 </div>
                 
                 {authError && (
-                  <motion.p 
-                    initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
+                  <p
                     className={cn(
                       "text-xs font-medium p-3 rounded-lg border",
                       (authError.includes('sent') || authError.includes('itumwa'))
@@ -3649,7 +3604,7 @@ export default function App() {
                     )}
                   >
                     {authError}
-                  </motion.p>
+                  </p>
                 )}
 
                 <button 
@@ -3698,7 +3653,7 @@ export default function App() {
                 </button>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     );
@@ -3739,15 +3694,12 @@ export default function App() {
 
       <main className="max-w-md mx-auto px-6 pt-2">
         {toast && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+          <div
             className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] bg-gradient-to-r from-green-600 to-purple-600 text-zinc-100 px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2"
           >
             <Bell size={16} />
             {toast}
-          </motion.div>
+          </div>
         )}
 
         {['home', 'premium', 'news'].includes(activeTab) && (
@@ -3771,15 +3723,9 @@ export default function App() {
           </div>
         )}
 
-        <AnimatePresence mode="wait">
+        
           {activeTab === 'home' && (
-            <motion.div
-              key="home"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-6"
+            <div className="space-y-6"
             >
               <div className="grid grid-cols-2 gap-4">
                 {filteredPosts.map((post, i) => (
@@ -3802,7 +3748,7 @@ export default function App() {
                     password={post.password}
                     passwordRequestMsg={post.passwordRequestMsg}
                     t={t}
-                    author={users.find(u => u.uid === post.authorId)}
+                    author={getAuthor(post)}
                     onAuthorClick={() => { if (post.authorId) { setViewingProfileId(post.authorId); setActiveTab('profile'); } }}
                     currentUserId={user?.uid}
                     onFollowToggle={handleToggleFollowGlobal}
@@ -3816,26 +3762,20 @@ export default function App() {
                 )}
                 {dataLoading && (
                   <div className="col-span-2 py-20 flex flex-col items-center justify-center text-zinc-500">
-                    <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }} className="mb-4 text-3xl">
+                    <div className="mb-4 text-3xl">
                       ⚽
-                    </motion.div>
+                    </div>
                     <p className="text-sm uppercase tracking-widest font-bold opacity-50">Loading data...</p>
                   </div>
                 )}
               </div>
               
               
-            </motion.div>
+            </div>
           )}
 
           {activeTab === 'premium' && (
-            <motion.div
-              key="premium"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-4"
+            <div className="space-y-4"
             >
               <div className="bg-gradient-to-br from-green-500 to-purple-700 rounded-3xl p-6 text-zinc-100 mb-6">
                 <h2 className="text-2xl font-black italic mb-1">{t('freeAccess')}</h2>
@@ -3860,7 +3800,7 @@ export default function App() {
       setModalOpen('app');
     }}
     t={t}
-    author={users.find(u => u.uid === app.authorId)}
+    author={getAuthor(app)}
     onAuthorClick={() => {
       if (app.authorId) {
         setViewingProfileId(app.authorId);
@@ -3883,17 +3823,11 @@ export default function App() {
               </div>
 
               
-            </motion.div>
+            </div>
           )}
 
           {activeTab === 'news' && (
-            <motion.div
-              key="news"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-6"
+            <div className="space-y-6"
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {filteredNews.map((n, i) => (
@@ -3910,7 +3844,7 @@ export default function App() {
     }}
     onClick={() => setSelectedNews(n)}
     t={t}
-    author={users.find(u => u.uid === n.authorId)}
+    author={getAuthor(n)}
     onAuthorClick={() => {
       if (n.authorId) {
         setViewingProfileId(n.authorId);
@@ -3933,16 +3867,12 @@ export default function App() {
               </div>
               
               
-            </motion.div>
+            </div>
           )}
 
           {activeTab === 'chat' && (
-            <motion.div
+            <div
               key="chat"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
               className="space-y-6"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
@@ -3959,7 +3889,7 @@ export default function App() {
       setModalOpen('aiprompt');
     }}
     onClick={() => setSelectedPrompt(p)}
-    author={users.find(u => u.uid === p.authorId)}
+    author={getAuthor(p)}
     onAuthorClick={() => {
       if (p.authorId) {
         setViewingProfileId(p.authorId);
@@ -3982,17 +3912,11 @@ export default function App() {
               </div>
               
               
-            </motion.div>
+            </div>
           )}
 
                     {activeTab === 'profile' && (
-            <motion.div
-              key="profile"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-6 pb-24"
+            <div className="space-y-6 pb-24"
             >
               {(() => {
                 const isViewingOther = !!viewingProfileId && viewingProfileId !== user?.uid;
@@ -4009,9 +3933,11 @@ export default function App() {
                 const userPrompts = aiPrompts.filter(filterUserItems);
                 
                 const totalPostsCount = userPosts.length + userApps.length + userNews.length + userPrompts.length;
-                const totalLikes = userPosts.reduce((acc, post) => {
-                  return acc + (post.reactions?.like || 0);
-                }, 0);
+                const totalLikes = 
+                  userPosts.reduce((acc, post) => acc + (post.reactions?.like || 0), 0) +
+                  userApps.reduce((acc, app) => acc + (app.reactions?.like || 0), 0) +
+                  userNews.reduce((acc, n) => acc + (n.reactions?.like || 0), 0) +
+                  userPrompts.reduce((acc, p) => acc + (p.reactions?.like || 0), 0);
                 const followersCount = (isAdmin && isOwnProfile) ? users.length : (displayedProfile?.followers?.length || 0);
                 const isFollowing = user && displayedProfile?.followers?.includes(user.uid);
                 const toggleFollow = async () => {
@@ -4032,7 +3958,7 @@ export default function App() {
                       </div>
                       <div className="font-bold text-lg flex items-center gap-1">
                         {displayedProfile?.displayName || 'Profile'}
-                        {displayedProfile?.verified && <BadgeCheck size={18} className="text-blue-500" />}
+                        {displayedProfile?.verified && <VerifiedBadge type={displayedProfile?.verifiedType} size={18} />}
                       </div>
                       <div className="w-10">
                         {isOwnProfile && (
@@ -4062,20 +3988,20 @@ export default function App() {
                         )}
                       </div>
                         
-                      <div className="flex gap-6 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => {
-                          setNetworkModalTab('followers');
-                          setNetworkModalOpen(true);
-                        }}>
-                        <div className="flex flex-col items-center">
+                      <div className="flex gap-6">
+                        <div className="flex flex-col items-center cursor-pointer hover:opacity-80" onClick={() => setProfileTab('hacks')}>
                           <span className="font-black text-xl text-zinc-100">{userPosts.length}</span>
                           <span className="text-xs text-zinc-500 font-medium">Posts</span>
                         </div>
-                        <div className="flex flex-col items-center">
+                        <div className="flex flex-col items-center cursor-pointer hover:opacity-80" onClick={() => {
+                          setNetworkModalTab('followers');
+                          setNetworkModalOpen(true);
+                        }}>
                           <span className="font-black text-xl text-zinc-100">{Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(followersCount)}</span>
                           <span className="text-xs text-zinc-500 font-medium">Followers</span>
                         </div>
                         
-                        <div className="flex flex-col items-center">
+                        <div className="flex flex-col items-center cursor-pointer hover:opacity-80">
                           <span className="font-black text-xl text-zinc-100">{Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(totalLikes)}</span>
                           <span className="text-xs text-zinc-500 font-medium">Likes</span>
                         </div>
@@ -4108,6 +4034,8 @@ export default function App() {
                          <button onClick={() => setProfileTab('aiprompts')} className={cn("flex-1 whitespace-nowrap px-4 py-3 text-xs font-bold uppercase tracking-widest", profileTab === 'aiprompts' ? "text-zinc-100 border-b-2 border-zinc-100" : "text-zinc-500 hover:text-zinc-300")}>
                            AI Prompts
                          </button>
+
+
                       </div>
                       <div className="py-4 space-y-4 px-2">
                         {profileTab === 'hacks' && (
@@ -4132,7 +4060,7 @@ export default function App() {
                                 passwordRequestMsg={post.passwordRequestMsg}
                                 t={t}
                                 index={i}
-                                author={users.find(u => u.uid === post.authorId)}
+                                author={getAuthor(post)}
                                 onAuthorClick={() => { if (post.authorId) { setViewingProfileId(post.authorId); setActiveTab('profile'); } }}
                                 currentUserId={user?.uid}
                                 onFollowToggle={handleToggleFollowGlobal}
@@ -4164,7 +4092,7 @@ export default function App() {
     onEdit={() => { setEditingItem(app); setModalOpen('app'); }}
     t={t}
     index={i}
-    author={users.find(u => u.uid === app.authorId)}
+    author={getAuthor(app)}
     onAuthorClick={() => {
       if (app.authorId) {
         setViewingProfileId(app.authorId);
@@ -4203,7 +4131,7 @@ export default function App() {
     onEdit={() => { setEditingItem(n); setModalOpen('news'); }}
     t={t}
     index={i}
-    author={users.find(u => u.uid === n.authorId)}
+    author={getAuthor(n)}
     onAuthorClick={() => {
       if (n.authorId) {
         setViewingProfileId(n.authorId);
@@ -4241,7 +4169,7 @@ export default function App() {
     onDelete={() => setDeleteConfirm({ collection: 'ai_prompts', id: prompt.id })}
     onEdit={() => { setEditingItem(prompt); setModalOpen('aiprompt'); }}
     index={i}
-    author={users.find(u => u.uid === prompt.authorId)}
+    author={getAuthor(prompt)}
     onAuthorClick={() => {
       if (prompt.authorId) {
         setViewingProfileId(prompt.authorId);
@@ -4262,17 +4190,11 @@ export default function App() {
                   </>
                 );
               })()}
-            </motion.div>
+            </div>
           )}
 
           {activeTab === 'settings' && (
-            <motion.div
-              key="settings"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-6 pb-24"
+            <div className="space-y-6 pb-24"
             >
               <div className="flex items-center gap-4 mb-2">
                 <button onClick={() => setActiveTab('profile')} className="p-2 -ml-2 rounded-full hover:bg-zinc-800/50 transition-colors">
@@ -4439,20 +4361,16 @@ export default function App() {
               <p className="text-center text-[10px] text-zinc-600 font-bold uppercase tracking-widest pb-4">
                 Cyber Hacks v1.0.0
               </p>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
-      </main>
+        </main>
 
                   {/* Floating Action Button */}
       {user && activeTab === 'profile' && !viewingProfileId && (
         <div className="fixed bottom-24 right-6 z-50 flex flex-col items-end gap-3 pointer-events-none">
-          <AnimatePresence>
+          
             {fabOpen && (
-              <motion.div 
-                initial={{ opacity: 0, y: 20, scale: 0.8 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 20, scale: 0.8 }}
+              <div
                 className="flex flex-col gap-2 pointer-events-auto"
               >
                 <button onClick={() => { setModalOpen('aiprompt'); setFabOpen(false); }} className="flex items-center justify-end gap-3 group">
@@ -4479,38 +4397,30 @@ export default function App() {
                     <Home size={18} />
                   </div>
                 </button>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
+          
           <button 
             onClick={() => setFabOpen(!fabOpen)}
             className="w-14 h-14 bg-gradient-to-r from-green-500 to-purple-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-purple-500/30 hover:scale-105 active:scale-95 transition-transform pointer-events-auto border-2 border-black"
           >
-            <motion.div
-              animate={{ rotate: fabOpen ? 45 : 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            <div
             >
               <Plus size={24} />
-            </motion.div>
+            </div>
           </button>
         </div>
       )}
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} t={t} theme={theme} />
 
-      <AnimatePresence>
+      
         {logoutConfirmOpen && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <div
               onClick={() => setLogoutConfirmOpen(false)}
               className="absolute inset-0 bg-black/90 backdrop-blur-sm"
             />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
+            <div
               className="relative w-full max-w-xs bg-zinc-900 border border-zinc-800 rounded-3xl p-6 text-center shadow-2xl"
             >
               <div className="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -4531,24 +4441,19 @@ export default function App() {
                   {t('yes')}
                 </button>
               </div>
-            </motion.div>
+            </div>
           </div>
         )}
-      </AnimatePresence>
+      
 
-      <AnimatePresence>
+      
         {deleteConfirm && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <div
               onClick={() => setDeleteConfirm(null)}
               className="absolute inset-0 bg-black/90 backdrop-blur-sm"
             />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
+            <div
               className="relative w-full max-w-xs bg-zinc-900 border border-zinc-800 rounded-3xl p-6 text-center shadow-2xl"
             >
               <div className="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -4569,23 +4474,17 @@ export default function App() {
                   {t('delete')}
                 </button>
               </div>
-            </motion.div>
+            </div>
           </div>
         )}
-      </AnimatePresence>
+      
 
-            <AnimatePresence>
+            
         {selectedUserForAction && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
             className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-sm"
           >
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+            <div
               className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 w-full max-w-sm"
             >
               <div className="flex items-center gap-3 mb-6 pb-4 border-b border-zinc-800">
@@ -4599,30 +4498,55 @@ export default function App() {
                 <div>
                   <h3 className="text-lg font-black text-white leading-tight flex items-center gap-1">
                     {selectedUserForAction.displayName}
-                    {selectedUserForAction.verified && <BadgeCheck size={16} className="text-blue-500" />}
+                    {selectedUserForAction.verified && <VerifiedBadge type={selectedUserForAction.verifiedType} size={16} />}
                   </h3>
                   <div className="text-xs text-zinc-500">{selectedUserForAction.email}</div>
                 </div>
               </div>
               
               <div className="space-y-3">
-                {!selectedUserForAction.verified && (
+                {!selectedUserForAction.verified ? (
+                  <div className="flex gap-2">
+                    <button onClick={() => {
+                      if (window.confirm("Verify this account (Type 1 - Facebook Style)?")) {
+                        updateDoc(doc(db, 'users', selectedUserForAction.uid), { verified: true, verifiedType: '1' }).then(() => setSelectedUserForAction(null));
+                      }
+                    }} className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-bold flex flex-col items-center justify-center gap-1 transition-colors text-xs">
+                      <VerifiedBadge type="1" size={20} /> Verify (Type 1)
+                    </button>
+                    <button onClick={() => {
+                      if (window.confirm("Verify this account (Type 2 - Default)?")) {
+                        updateDoc(doc(db, 'users', selectedUserForAction.uid), { verified: true, verifiedType: '2' }).then(() => setSelectedUserForAction(null));
+                      }
+                    }} className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-bold flex flex-col items-center justify-center gap-1 transition-colors text-xs">
+                      <VerifiedBadge type="2" size={20} /> Verify (Type 2)
+                    </button>
+                  </div>
+                ) : (
                   <button onClick={() => {
-                    if (window.confirm("Are you sure you want to verify this account?")) {
-                      updateDoc(doc(db, 'users', selectedUserForAction.uid), { verified: true }).then(() => setSelectedUserForAction(null));
+                    if (window.confirm("Remove verification from this account?")) {
+                      updateDoc(doc(db, 'users', selectedUserForAction.uid), { verified: false, verifiedType: null }).then(() => setSelectedUserForAction(null));
                     }
-                  }} className="w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors">
-                    <BadgeCheck size={18} /> Verify User
+                  }} className="w-full bg-zinc-700 hover:bg-zinc-600 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors">
+                    <X size={18} /> Remove Verification
                   </button>
                 )}
                 
-                {!selectedUserForAction.banned && (
+                {!selectedUserForAction.banned ? (
                   <button onClick={() => {
                     if (window.confirm("Are you sure you want to ban this account?")) {
                       updateDoc(doc(db, 'users', selectedUserForAction.uid), { banned: true }).then(() => setSelectedUserForAction(null));
                     }
                   }} className="w-full bg-red-600 hover:bg-red-500 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors">
                     <Ban size={18} /> Ban Account
+                  </button>
+                ) : (
+                  <button onClick={() => {
+                    if (window.confirm("Are you sure you want to unban this account?")) {
+                      updateDoc(doc(db, 'users', selectedUserForAction.uid), { banned: false }).then(() => setSelectedUserForAction(null));
+                    }
+                  }} className="w-full bg-green-600 hover:bg-green-500 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors">
+                    <Check size={18} /> Unban Account
                   </button>
                 )}
                 
@@ -4638,12 +4562,12 @@ export default function App() {
                   Cancel
                 </button>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      
 
-      <AnimatePresence>
+      
         {modalOpen && (
           <AddModal isAdmin={isAdmin} 
             isOpen={!!modalOpen}
@@ -4671,9 +4595,9 @@ export default function App() {
             }}
           />
         )}
-      </AnimatePresence>
+      
 
-      <AnimatePresence>
+      
         {selectedNews && (
           <NewsDetailModal 
             key={selectedNews.id}
@@ -4682,9 +4606,9 @@ export default function App() {
             t={t}
           />
         )}
-      </AnimatePresence>
+      
 
-      <AnimatePresence>
+      
         {selectedPrompt && (
           <AiPromptDetailModal 
             key={selectedPrompt.id}
@@ -4692,28 +4616,23 @@ export default function App() {
             onClose={() => setSelectedPrompt(null)}
           />
         )}
-      </AnimatePresence>
+      
 
-      <AnimatePresence>
+      
         {isProcessingLink && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
             className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center"
           >
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+            <div
               className="w-16 h-16 border-4 border-purple-500 border-t-transparent flex items-center justify-center rounded-full mb-6"
             >
               <div className="w-8 h-8 border-4 border-zinc-700 border-b-transparent rounded-full" />
-            </motion.div>
+            </div>
             <h3 className="text-2xl font-black text-white mb-2 tracking-tight">{t('processing')}</h3>
             <p className="text-zinc-400 font-medium">{t('pleaseWait')}</p>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      
 
       <PasswordModal 
         isOpen={showAviatorPasswordPrompt}
@@ -4738,12 +4657,12 @@ export default function App() {
         t={t}
       />
 
-      <AnimatePresence>
+      
         {adsManagerOpen && (
           <AdminAdsManager t={t} onBack={() => setAdsManagerOpen(false)} />
         )}
-      </AnimatePresence>
-      <AnimatePresence>
+      
+      
         {networkModalOpen && (
           <NetworkModal
             isOpen={networkModalOpen}
@@ -4756,8 +4675,8 @@ export default function App() {
             t={t}
           />
         )}
-      </AnimatePresence>
-      <AnimatePresence>
+      
+      
         {userSearchModalOpen && (
           <UserSearchModal
             isOpen={userSearchModalOpen}
@@ -4773,7 +4692,7 @@ export default function App() {
             t={t}
           />
         )}
-      </AnimatePresence>
+      
     </div>
   );
 }

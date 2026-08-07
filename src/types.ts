@@ -87,6 +87,7 @@ export interface UserProfile {
   following?: string[];
   role: 'admin' | 'user';
   verified?: boolean;
+  verifiedType?: '1' | '2';
   banned?: boolean;
   lastActiveDate?: string;
   createdAt?: any;

@@ -1,7 +1,0 @@
-const fs = require('fs');
-let content = fs.readFileSync('src/App.tsx', 'utf8');
-
-content = content.replace(/setModalOpen\('chat'\)/g, "setModalOpen('aiprompt')");
-content = content.replace(/setModalOpen\('premium'\)/g, "setModalOpen('app')");
-
-fs.writeFileSync('src/App.tsx', content);
